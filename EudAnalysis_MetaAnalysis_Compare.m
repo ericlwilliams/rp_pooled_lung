@@ -23,7 +23,6 @@ fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta_com
 load(fn,'CGcomb');
 
 % change to log10(n)  (add - for log10(a)
-
 LymanN = log10(CGcomb.mLymanN);
 CGcomb.mLymanN = LymanN;
 td50s = CGcomb.mLymanGridTD50Range;
@@ -34,6 +33,7 @@ ms = CGcomb.mLymanGridMRange;
 % llhds (TD50,m,n)
 llhds = CGcomb.mLymanGrid.loglikelihood;
 clear CGcomb;
+
 
 %find TD50 ind
 [~,td50_ind] = min(abs(td50s-re_td50(1)));

@@ -36,10 +36,10 @@ ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
     %_meta.mat';
     
     %% COMB only
-    fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta_comb.mat';
-    is_comb_only=true;
-    %fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta.mat';
-    %is_comb_only=false;
+    %fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta_comb.mat';
+    %is_comb_only=true;
+    fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta.mat';
+    is_comb_only=false;
     
     %fn = 'Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_EUD_crs_meta.mat';
    
@@ -92,7 +92,7 @@ ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
     
     
     %% plot log-likelihood isosurface
-    if 1
+    if 0
         cur_fig=figure(1); clf reset; colormap(cm2);
         set(gcf,'Position',ss_four2three);
         
@@ -1215,7 +1215,45 @@ if 0
 
 
 end
+% lyman curves - n
+if 0
 
+
+        %%MSK + NKI + UMich + RTOG + COMB
+        cur_fig=figure(5); clf reset; colormap(cm2);
+        set(gcf,'Position',ss_four2three);
+        disp('******');
+        disp([]);
+        disp('MSK');
+        h_msk=CGmsk.fLymanGridExactFig_n_loglikelihood('r-',2);
+        disp('NKI');
+        h_nki=CGnki.fLymanGridExactFig_n_loglikelihood('b-',2);
+        disp('UM');
+        h_um=CGum.fLymanGridExactFig_n_loglikelihood('m-',2);
+        disp('RTOG');
+        h_rtog=CGrtog.fLymanGridExactFig_n_loglikelihood('g-',2);
+        disp('COMB');
+        h_comb=CGcomb.fLymanGridExactFig_n_loglikelihood('k-',2);
+  
+        set(gca,'FontSize',18);
+        ylabel('Log likelihood per degree of freedom','FontSize',20);
+        xlabel('log_{10}(n)','FontSize',20);
+              
+        ylim([-0.55 -0.2]);
+              
+        h_lgnd=legend([h_msk h_nki h_um h_rtog h_comb],'MSK','NKI','UMich','RTOG','COMB','Location','SouthWest');
+        set(h_lgnd,'FontSize',18);
+        set(h_lgnd,'Location','SouthEast')
+        %
+        %h_lgnd=legend([h_msk h_nki h_rtog h_um h_comb],'MSK','NKI','RTOG','UMich','COMB','Location','Best');
+        if do_print,
+            set(cur_fig,'Color','w');
+            export_fig(cur_fig,[fig_loc,'lkb_ll_log10n'],'-png');
+            disp(['Saving ',fig_loc,'lkb_ll_log10n.png...']);
+        end
+
+
+end
 % m
 if 0
 %        disp(' '); disp(Regions{k});
@@ -1363,7 +1401,7 @@ if 0
 end
 
 % data sets consistency, heterogeniety and inconsistency
-if 0
+if 1
     %% MSK + NKI
     disp(' '); 
 %     disp('MSK + NKI: Consistency LKB');

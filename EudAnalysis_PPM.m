@@ -299,28 +299,28 @@ for i=1:length(groups)
     plot(cur_perf_x,probit_y,'k.-','LineWidth',3);hold on;
     
     %errors from perfusion reduction fit
-    h_perf_err=plot(cur_perf_x,probit_y+perf_err_hi_y,'g--','LineWidth',2);
-    plot(cur_perf_x,probit_y-perf_err_lo_y,'g--','LineWidth',2);
+%     h_perf_err=plot(cur_perf_x,probit_y+perf_err_hi_y,'g--','LineWidth',2);
+%     plot(cur_perf_x,probit_y-perf_err_lo_y,'g--','LineWidth',2);
     
     %errors from probit fit
-    h_prob_err=plot(cur_perf_x,probit_y+prob_err_hi_y,'b--','LineWidth',2);
-    plot(cur_perf_x,probit_y-prob_err_lo_y,'b--','LineWidth',2);
+%     h_prob_err=plot(cur_perf_x,probit_y+prob_err_hi_y,'b--','LineWidth',2);
+%     plot(cur_perf_x,probit_y-prob_err_lo_y,'b--','LineWidth',2);
     
     % combined errors
-    h_comb_err=plot(cur_perf_x,probit_y+comb_err_hi_y,'r--','LineWidth',2);
-    plot(cur_perf_x,probit_y-comb_err_lo_y,'r--','LineWidth',2);
+    h_comb_err=plot(cur_perf_x,probit_y+comb_err_hi_y,'k--','LineWidth',2);
+    plot(cur_perf_x,probit_y-comb_err_lo_y,'k--','LineWidth',2);
     
     
     xlim([min(cur_perf_x) max(cur_perf_x)]);
     ylim([0 0.7]);
 
-    lgnd=legend([h_perf_err h_prob_err h_comb_err],...
-            '$\sigma_{\rm{perf}}$',...            
-            '$\sigma_{\rm{probit}}$',...
-            '$\sqrt{\sigma_{\rm{probit}}^{2}+\sigma_{\rm{perf}}^{2}}$',...
-            'location','best');
-    set(lgnd,'interpreter','latex');
-    set(lgnd,'fontsize',24);
+%     lgnd=legend([h_perf_err h_prob_err h_comb_err],...
+%             '$\sigma_{\rm{perf}}$',...            
+%             '$\sigma_{\rm{probit}}$',...
+%             '$\sqrt{\sigma_{\rm{probit}}^{2}+\sigma_{\rm{perf}}^{2}}$',...
+%             'location','best');
+%     set(lgnd,'interpreter','latex');
+%     set(lgnd,'fontsize',24);
     
     quarts = quantile(perfs{i},3);
     first_quart = logical(perfs{i}<quarts(1));
@@ -359,8 +359,8 @@ for i=1:length(groups)
                 max(perfs{i}(fourth_quart))];
             
     errorbar_x(meds,comp_probs,(meds-low_bins),(high_bins-meds),'k*');  
-    text(0.01,0.45,['log-likelihood = $',num2str(probit_llhds(i),4),'$',10,...
-        '$p$-value = $',num2str(probit_pvals(i),2),'$'],...
+%     text(0.01,0.45,['log-likelihood = $',num2str(probit_llhds(i),4),'$',10,...
+    text(0.01,0.45,['$p$-value = $',num2str(probit_pvals(i),2),'$'],...
         'interpreter','latex','fontsize',24);
     set(gca,'FontSize',16);
     xlabel(['Perfusion Reduction (%)'],'FontSize',20);
@@ -368,11 +368,11 @@ for i=1:length(groups)
      
     if do_print,
         set(cur_fig,'Color','w');
-        export_fig(cur_fig,[fig_loc,'rp_probit_resp_',grp_labels{i}],'-pdf');
-        disp(['Saving ',fig_loc,'rp_probit_resp_',grp_labels{i},'.pdf...']);
+        export_fig(cur_fig,[fig_loc,'rp_probit_resp_',grp_labels{i}],'-png');
+        disp(['Saving ',fig_loc,'rp_probit_resp_',grp_labels{i},'.png...']);
     end
     
-    %% hitogram of perf values for each dataset
+    %% histogram of perf values for each dataset
     cur_fig=figure(i+1+2*length(groups)); clf reset; 
     set(cur_fig,'Position',ss_four2three);
    
