@@ -158,8 +158,8 @@ for i=1:length(groups)
         
         if do_print,
             set(cur_fig,'Color','w');
-            export_fig(cur_fig,[fig_loc,'h_',grp_labels{i},'_dvhs'],'-pdf');
-            disp(['Saving ',fig_loc,'h_',grp_labels{i},'_dvhs.pdf...']);
+            export_fig(cur_fig,[fig_loc,'h_',grp_labels{i},'_dvhs'],'-png');
+            disp(['Saving ',fig_loc,'h_',grp_labels{i},'_dvhs.png...']);
          end
 
     end
@@ -233,8 +233,8 @@ set(ax1,'xlim',[0 250],'ylim',[0 0.45],...
 
 if do_print,
     set(cur_fig,'Color','w');
-    export_fig(cur_fig,[fig_loc,'perf_red_fit'],'-pdf');
-   disp(['Saving ',fig_loc,'perf_red_fit.pdf...']);
+    export_fig(cur_fig,[fig_loc,'perf_red_fit'],'-png');
+   disp(['Saving ',fig_loc,'perf_red_fit.png...']);
 end
 
 for i=1:length(groups)
@@ -266,8 +266,8 @@ for i=1:length(groups)
         'FontSize',25,'Units','normalized','interpreter','latex')
     if do_print,
         set(cur_fig,'Color','w');
-        export_fig(cur_fig,[fig_loc,'ranked_',grp_labels{i},'_perfs'],'-pdf');
-        disp(['Saving ',fig_loc,'ranked_',grp_labels{i},'_perfs.pdf...']);
+        export_fig(cur_fig,[fig_loc,'ranked_',grp_labels{i},'_perfs'],'-png');
+        disp(['Saving ',fig_loc,'ranked_',grp_labels{i},'_perfs.png...']);
     end
     
      %% profit fits
@@ -360,8 +360,14 @@ for i=1:length(groups)
             
     errorbar_x(meds,comp_probs,(meds-low_bins),(high_bins-meds),'k*');  
 %     text(0.01,0.45,['log-likelihood = $',num2str(probit_llhds(i),4),'$',10,...
-    text(0.01,0.45,['$p$-value = $',num2str(probit_pvals(i),2),'$'],...
+    
+    if(probit_pvals(i)<0.001)
+    text(0.01,0.6,['$p-value < 0.001$'],...
         'interpreter','latex','fontsize',24);
+    else
+      text(0.01,0.6,['$p$-value = $',num2str(probit_pvals(i),2),'$'],...
+        'interpreter','latex','fontsize',24);
+    end
     set(gca,'FontSize',16);
     xlabel(['Perfusion Reduction (%)'],'FontSize',20);
     ylabel(['Probability of Complication (%)'],'FontSize',20);
@@ -396,8 +402,8 @@ for i=1:length(groups)
     ylabel('DVHs','FontSize',20);
     if do_print,
         set(cur_fig,'Color','w');
-        export_fig(cur_fig,[fig_loc,'h_',grp_labels{i},'_perfs'],'-pdf');
-        disp(['Saving ',fig_loc,'h_',grp_labels{i},'_perfs.pdf...']);
+        export_fig(cur_fig,[fig_loc,'h_',grp_labels{i},'_perfs'],'-png');
+        disp(['Saving ',fig_loc,'h_',grp_labels{i},'_perfs.png...']);
     end
     
     

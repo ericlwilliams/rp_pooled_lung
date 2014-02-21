@@ -92,7 +92,7 @@ ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
     
     
     %% plot log-likelihood isosurface
-    if 0
+    if 1
         cur_fig=figure(1); clf reset; colormap(cm2);
         set(gcf,'Position',ss_four2three);
         
@@ -1235,9 +1235,9 @@ if 0
         disp('COMB');
         h_comb=CGcomb.fLymanGridExactFig_n_loglikelihood('k-',2);
   
-        set(gca,'FontSize',18);
-        ylabel('Log likelihood per degree of freedom','FontSize',20);
-        xlabel('log_{10}(n)','FontSize',20);
+        set(gca,'FontSize',20);
+        ylabel('Log likelihood per degree of freedom','FontSize',24);
+        xlabel('log_{10}(n)','FontSize',24);
               
         ylim([-0.55 -0.2]);
               
@@ -1283,9 +1283,9 @@ if 0
         
         %h_lgnd=legend([h_msk h_nki h_rtog h_um h_comb],'MSK','NKI','RTOG','UMich','COMB','Location','Best');
         
-        set(gca,'FontSize',18);
-        ylabel('Log likelihood per degree of freedom','FontSize',20);
-        xlabel('m','FontSize',20);
+        set(gca,'FontSize',20);
+        ylabel('Log likelihood per degree of freedom','FontSize',24);
+        xlabel('m','FontSize',24);
         ylim([-0.5 -0.2]);
         xlim([0.1 1.2]);
         %set(h_lgnd,'FontSize',15);
@@ -1309,8 +1309,7 @@ if 0
 end
 
 % TD50
-if 0
-%        disp(' '); disp(Regions{k});
+if 0%        disp(' '); disp(Regions{k});
         cur_fig=figure(2); clf reset; colormap(cm2);
         set(cur_fig,'Position',ss_four2three);
         disp('*******');
@@ -1331,9 +1330,10 @@ if 0
         %h_comb=CGcomb.fLymanGridExactFig_TD50_loglikelihoodAtLoga_EUD(-0.2,'ks--',2);
         
        
-           set(gca,'FontSize',18);
-        ylabel('Log likelihood per degree of freedom','FontSize',20);
-        xlabel('TD_{50}','FontSize',20);
+           set(gca,'FontSize',20);
+        ylabel('Log likelihood per degree of freedom','FontSize',24);
+        xlabel('TD_{50}','FontSize',24);
+        
         ylim([-0.5 -0.2]);
         xlim([0 72]);
         %set(h_lgnd,'FontSize',15);
@@ -1401,7 +1401,7 @@ if 0
 end
 
 % data sets consistency, heterogeniety and inconsistency
-if 1
+if 0
     %% MSK + NKI
     disp(' '); 
 %     disp('MSK + NKI: Consistency LKB');

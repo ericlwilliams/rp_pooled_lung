@@ -24,7 +24,7 @@ fig_loc = 'Z:/elw/MATLAB/meta_analy/slides/figures/latest/';
 %fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_crs_EUD_fine_meta.mat';
 
 load(fn,'CGnki','CGmsk','CGrtog','CGum');
-
+protocols = {'NKI','MSK','RTOG','UM'};
 % change to log10(n)  (add - for log10(a)
 % LymanN = log10(CGmsk.mLymanN);
 % CGcomb.mLymanN = LymanN;
@@ -89,9 +89,17 @@ for k = 1:num
 end
    
 % Get mean values of parameters, likelihood ratio between mean value and 
-meta_n = mean(a);
-meta_td50 = mean(b0);
-meta_m = mean(b1);
+% meta_n = mean(a);
+% meta_td50 = mean(b0);
+% meta_m = mean(b1);
+
+
+meta_td50 = 21.88;% random effects
+meta_n = 1.22;% random effects
+meta_m = 0.29; % random effects
+
+
+disp(['Meta: ',num2str(meta_td50),',',num2str(meta_m),',',num2str(meta_n)]);
 pseudo_pvals = zeros(num,1);
 for j = 1:num
     mx = max(OCobjs(j).mLymanGrid.loglikelihood(:));
@@ -103,6 +111,12 @@ for j = 1:num
     
     pseudo_chi2stat = -2*meta_llhd+2*mx;
     pseudo_pvals(j) = 1-chi2cdf(pseudo_chi2stat,3);
+    
+    disp([protocols{j},'(',num2str(b0(j)),',',num2str(b1(j)),',',num2str(a(j)),')']);
+    disp([protocols{j},' LLHD: ',num2str(mx)]);
+    disp(['Meta LLHD: ',num2str(meta_llhd)]);
+    disp(['Chi2: ',num2str(pseudo_chi2stat)]);
+    disp(['P-val: ',num2str(pseudo_pvals(j))]);
     
 end
    
