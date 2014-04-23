@@ -495,6 +495,7 @@ if 1
             disp(['Saving ',fig_loc,'umich_lkb_cntr_ll_td50_m.png...']);
         end
       end %end comb only
+      
         cur_fig=figure(5); clf reset; colormap(cm2);
         set(gcf,'Position',ss_four2three);
         CGcomb.fLymanGridExactFig_TD50_m_EUD();
