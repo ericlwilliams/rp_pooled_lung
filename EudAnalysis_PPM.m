@@ -4,7 +4,7 @@ screen_size=get(0,'ScreenSize');
 ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
   
 do_print = true;
-do_spaghetti = true; % F-speedup
+do_spaghetti = false; % F-speedup
 
     fig_loc = 'Z:/elw/MATLAB/meta_analy/slides/figures/latest/';
     
@@ -322,7 +322,8 @@ for i=1:length(groups)
 %     set(lgnd,'interpreter','latex');
 %     set(lgnd,'fontsize',24);
     
-    quarts = quantile(perfs{i},3);
+%     quarts = quantile(perfs{i},3);
+    quarts = quantile(perfs{i},[0.25,0.5,0.75]);
     first_quart = logical(perfs{i}<quarts(1));
     second_quart = logical(perfs{i}<quarts(2));
     third_quart = ~second_quart;

@@ -23,8 +23,8 @@ fig_loc = 'Z:/elw/MATLAB/meta_analy/slides/figures/latest/';
 % fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_med_EUD_fine_meta.mat';
 %fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_crs_EUD_fine_meta.mat';
 
-load(fn,'CGnki','CGmsk','CGrtog','CGum');
-protocols = {'NKI','MSK','RTOG','UM'};
+load(fn,'CGnki','CGmsk','CGrtog','CGum','CGcomb');
+protocols = {'NKI','MSK','RTOG','UM','Comb'};
 % change to log10(n)  (add - for log10(a)
 % LymanN = log10(CGmsk.mLymanN);
 % CGcomb.mLymanN = LymanN;
@@ -48,7 +48,7 @@ protocols = {'NKI','MSK','RTOG','UM'};
 %     loga = -OCobj.mLymanN(a_loc);
 %     
     
-OCobjs = [CGnki;CGmsk;CGrtog;CGum]';
+OCobjs = [CGnki;CGmsk;CGrtog;CGum;CGcomb]';
 
 
 % prepare
@@ -123,5 +123,45 @@ end
 
 disp(pseudo_pvals)
     
+
+%% Compare protocol results from combined llhd matrix
+
+disp(['Compare protocol results from combined llhd matrix' ]);
+comb_pseudo_pvals = zeros(num-1,1);
+mx = max(OCobjs(5).mLymanGrid.loglikelihood(:));
+for j = 1:(num-1)
+    cur_td50 = b0(j);
+    cur_m = b1(j);
+    cur_n = a(j);
+    % for each inst. find likelihood at meta values
+    [~,td50_ind] = min(abs(OCobjs(5).mLymanGrid.TD50 - cur_td50));
+    [~,m_ind] = min(abs(OCobjs(5).mLymanGrid.m - cur_m));
+    [~,n_ind] = min(abs(OCobjs(5).mLymanN - cur_n));
+    meta_llhd = OCobjs(5).mLymanGrid.loglikelihood(td50_ind,m_ind,n_ind);
     
+    pseudo_chi2stat = -2*meta_llhd+2*mx;
+    comb_pseudo_pvals(j) = 1-chi2cdf(pseudo_chi2stat,3);
+    
+    disp([protocols{j},'(',num2str(b0(j)),',',num2str(b1(j)),',',num2str(a(j)),')']);
+    disp([protocols{j},' LLHD: ',num2str(meta_llhd)]);
+    disp(['Meta LLHD: ',num2str(mx)]);
+    disp(['Chi2: ',num2str(pseudo_chi2stat)]);
+    disp(['P-val: ',num2str(comb_pseudo_pvals(j))]);
+    
+end
+
+% meta analysis model in pooled matrix
+  [~,td50_ind] = min(abs(OCobjs(5).mLymanGrid.TD50 - meta_td50));
+    [~,m_ind] = min(abs(OCobjs(5).mLymanGrid.m - meta_m));
+    [~,n_ind] = min(abs(OCobjs(5).mLymanN - meta_n));
+    meta_llhd = OCobjs(5).mLymanGrid.loglikelihood(td50_ind,m_ind,n_ind);
+    
+    pseudo_chi2stat = -2*meta_llhd+2*mx;
+    meta_pseudo_pvals = 1-chi2cdf(pseudo_chi2stat,3);
+
+
+disp(comb_pseudo_pvals)
+
+disp(['meta paramters in pooled matrix p-value: ',num2str(meta_pseudo_pvals)]);
+
 
