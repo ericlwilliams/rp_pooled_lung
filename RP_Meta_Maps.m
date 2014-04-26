@@ -5,16 +5,49 @@ function RP_Meta_Maps
 % - slice combined llhd matrix at meta points, slice of combined llhd NOT
 % projection
 %%%%%%%%%%%%%%%%%%%%%%%%
+cntr_colors = {[1 0 0], [0 1 0], [0 0 1]};
+% cm1 = colormap(jet(300)); cm1=cm1(1:256,:); %cm1(end,:) = 0.5;
+% cm2 = colormap(jet(10));
 
-%% random effects meta analysis results [val,95% lo, hi]
-re_td50 = [21.88,15.9,27.8];
-re_log10a = [-0.0862,-0.69897,0.15533];
-re_m = [0.29,0.13,0.44];
+%% %%%%%%%%%%%%%%%%%%%%%%%%
+% Meta analysis results
+% data from rp_meta.R on eMac
 
-%% fixed effects 
+%% %%%%% Two options for n
+% 1. calculate n from meta-analysis a) 
+% 2. use meta analysis n
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% fixed effects meta analysis results [val,95% CIs]
+fe_m = [0.21,0.14,0.28];
 fe_td50 = [21.88,15.9,27.8];
 fe_log10a = [-0.0506,-0.2924,0.1038];
-fe_m = [0.21,0.14,0.28];
+fe_a = 10.^(fe_log10a);
+% Option 1. SE from CI to propigate error to n
+%fe_a_se = [fe_a(1)-fe_a(2),fe_a(3)-fe_a(1)]./(1.96*fe_a(1));
+%fe_n_se = fliplr((1/fe_a(1)).*fe_a_se);
+%fe_n = [(1/fe_a(1)) ((1/fe_a(1))-1.96.*fe_n_se(1)) ((1/fe_a(1))+1.96.*fe_n_se(2))];
+
+% Option 2. Meta anlysis resuls in rp_meta.R
+fe_n = [0.6832,0.4464,0.9199];
+
+
+%% random effects meta analysis results [val,95% CIs]
+re_m = [0.29,0.13,0.44];
+re_td50 = [21.88,15.9,27.8];
+re_log10a = [-0.0862,-0.69897,0.15533];
+re_a = 10.^(re_log10a);
+
+% Option 1. calculate SE from CI to propigate error to n
+%re_a_se = [re_a(1)-re_a(2),re_a(3)-re_a(1)]./(1.96*re_a(1));
+%re_n_se = fliplr((1/re_a(1)).*re_a_se);
+%re_n = [(1/re_a(1)) ((1/re_a(1))-1.96.*re_n_se(1)) ((1/re_a(1))+1.96.*re_n_se(2))];
+
+% Option 2. Meta analysis results for n from rp_meta.R
+% re_n = [1.294,0.117,2.47];
+re_n = [1.1166,0.2621,1.971];
+
+
 
 screen_size=get(0,'ScreenSize');
 ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
@@ -42,16 +75,16 @@ load(fn,'CGcomb');
 % low99 = mx_llhd-0.5* (3^2);
 
 %double check
-low68 = mx_llhd -0.5*(chi2inv(0.68,2));
-low95 = mx_llhd -0.5*(chi2inv(0.95,2));
-low99 = mx_llhd -0.5*(chi2inv(0.99,2));
+low68 = mx_llhd -0.5*(chi2inv(0.68,3));
+low95 = mx_llhd -0.5*(chi2inv(0.95,3));
+low99 = mx_llhd -0.5*(chi2inv(0.99,3));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % plot TD50 vs m 
 % split at meta analysis n
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-fe_n = 10.^(-fe_log10a);
+
 %find position of meta n
 [~,n_idx] = min(abs(CGcomb.mLymanN-fe_n(1)));   
 llhds = CGcomb.mLymanGrid.loglikelihood(:,:,n_idx);
@@ -60,18 +93,26 @@ llhds = CGcomb.mLymanGrid.loglikelihood(:,:,n_idx);
 cur_fig=figure(1); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_td50(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_td50(1) fe_td50(1)],[fe_m(2) fe_m(3)],'k','LineWidth',1);
-plot([fe_td50(2) fe_td50(3)],[fe_m(1) fe_m(1)],'k','LineWidth',1);
+[~,Htmp]=contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_td50(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_td50(1) fe_td50(1)],[fe_m(2) fe_m(3)],'k.-','LineWidth',1);
+plot([fe_td50(2) fe_td50(3)],[fe_m(1) fe_m(1)],'k.-','LineWidth',1);
 
-lgnd = legend([h_comb h_meta],'Pooled best fit (projected)','Meta analysis best fit',...
+lgnd = legend([h_comb h_fe_meta],...
+    'Pooled best fit (projected)',...
+    ['Fixed-effects',10,'meta analysis best fit'],...
     'Location','SouthEast');
 set(lgnd,'FontSize',18);
 
-xlim([15 28]);
-ylim([0.1 0.6]);
+xlim([15 32]);
+ylim([0.04 0.65]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -80,13 +121,13 @@ xlabel('TD_{50} (Gy)','FontSize',22); ylabel('Lyman m','FontSize',22);
 
 if do_print,
     set(cur_fig,'Color','w');
-    export_fig(cur_fig,[fig_loc,'map_llhd_meta_td50_m'],'-png');
-    disp(['Saving ',fig_loc,'map_llhd_meta_td50_m.png...']);
+    export_fig(cur_fig,[fig_loc,'map_llhd_fe_meta_td50_m'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_fe_meta_td50_m.png...']);
 end
         
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-% plot TD50 vs a 
+% plot n vs TD50
 % split at meta analysis m
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -97,18 +138,26 @@ llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,m_idx,:));
 cur_fig=figure(2); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanN,CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_n(1),fe_td50(1),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_n(1) fe_n(1)],[fe_td50(2) fe_td50(3)],'k','LineWidth',1);
-plot([fe_n(2) fe_n(3)],[fe_td50(1) fe_td50(1)],'k','LineWidth',1);
-
-lgnd = legend([h_comb h_meta],'Pooled best fit (projected)','Meta analysis best fit',...
-    'Location','SouthEast');
+[~,Htmp]=contour(CGcomb.mLymanN,CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_n(1),fe_td50(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_n(1) fe_n(1)],[fe_td50(2) fe_td50(3)],'k.-','LineWidth',1);
+plot([fe_n(2) fe_n(3)],[fe_td50(1) fe_td50(1)],'k.-','LineWidth',1);
+lgnd = legend([h_comb h_fe_meta],...
+    'Pooled best fit (projected)',...
+    ['Fixed-effects',10,'meta analysis best fit'],...
+    'Location','NorthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.7 3]);
-ylim([10 33]);
+
+xlim([0.26 3.2]);
+ylim([12 34.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -117,9 +166,10 @@ xlabel('Lyman n','FontSize',22); ylabel('TD50 (Gy)','FontSize',22);
 
 if do_print,
     set(cur_fig,'Color','w');
-    export_fig(cur_fig,[fig_loc,'map_llhd_meta_n_td50'],'-png');
-    disp(['Saving ',fig_loc,'map_llhd_meta_n_td50.png...']);
+    export_fig(cur_fig,[fig_loc,'map_llhd_fe_meta_n_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_fe_meta_n_td50.png...']);
 end
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,17 +184,25 @@ llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(td50_idx,:,:));
 cur_fig=figure(3); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_n(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_n(1) fe_n(1)],[fe_m(2) fe_m(3)],'k','LineWidth',1);
-plot([fe_n(2) fe_n(3)],[fe_m(1) fe_m(1)],'k','LineWidth',1);
+[~,Htmp]=contour(CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_n(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_n(1) fe_n(1)],[fe_m(2) fe_m(3)],'k.-','LineWidth',1);
+plot([fe_n(2) fe_n(3)],[fe_m(1) fe_m(1)],'k.-','LineWidth',1);
 
-lgnd = legend([h_comb h_meta],'Pooled best fit (projected)','Meta analysis best fit',...
+lgnd = legend([h_comb h_fe_meta],...
+    'Pooled best fit (projected)',...
+    ['Fixed-effects',10,'meta analysis best fit'],...
     'Location','SouthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.7 3.5]);
+xlim([0.26 4.4]);
 ylim([0.12 0.65]);
  
 set(gca,'xminortick','on','yminortick','on');
@@ -154,9 +212,140 @@ xlabel('Lyman n','FontSize',22); ylabel('Lyman m','FontSize',22);
 
 if do_print,
     set(cur_fig,'Color','w');
-    export_fig(cur_fig,[fig_loc,'map_llhd_meta_n_m'],'-png');
-    disp(['Saving ',fig_loc,'map_llhd_meta_n_m.png...']);
+    export_fig(cur_fig,[fig_loc,'map_llhd_fe_meta_n_m'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_fe_meta_n_m.png...']);
 end
+
+%find position of meta n
+[~,m_idx] = min(abs(CGcomb.mLymanGrid.m-fe_m(1)));   
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,m_idx,:));
+
+cur_fig=figure(4); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(log10(CGcomb.mLymanN),log10(CGcomb.mLymanGrid.TD50),llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(log10(CGcomb.mLymanN(comb_n_idx)),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(log10(fe_n(1)),log10(fe_td50(1)),'kx','LineWidth',2,'MarkerSize',14);
+plot(log10([fe_n(1) fe_n(1)]),[log10(fe_td50(2)) log10(fe_td50(3))],'k.-','LineWidth',1);
+plot(log10([fe_n(2) fe_n(3)]),[log10(fe_td50(1)) log10(fe_td50(1))],'k.-','LineWidth',1);
+
+lgnd = legend([h_comb h_fe_meta],...
+    'Pooled best fit (projected)',...
+    ['Fixed-effects',10,'meta analysis best fit'],...
+    'Location','NorthEast');
+set(lgnd,'FontSize',18);
+
+xlim([-0.2 0.75]);
+ylim([1.1 1.55]);
+
+
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('log_{10}(n)','FontSize',22); ylabel('log(TD50) (Gy)','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_fe_meta_log10_n_log10_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_fe_meta_log10_n_log10_td50.png...']);
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plot a vs TD50
+% split at meta analysis m
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%find position of meta n
+[~,m_idx] = min(abs(CGcomb.mLymanGrid.m-fe_m(1)));   
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,m_idx,:));
+
+cur_fig=figure(5); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour((1./CGcomb.mLymanN),CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(1./(CGcomb.mLymanN(comb_n_idx)),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_a(1),fe_td50(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_a(1) fe_a(1)],[fe_td50(2) fe_td50(3)],'k.-','LineWidth',1);
+plot([fe_a(2) fe_a(3)],[fe_td50(1) fe_td50(1)],'k.-','LineWidth',1);
+lgnd = legend([h_comb h_fe_meta],...
+    'Pooled best fit (projected)',...
+    ['Fixed-effects',10,'meta analysis best fit'],...
+    'Location','NorthWest');
+set(lgnd,'FontSize',18);
+
+
+xlim([0.1 1.5]);
+ylim([12 34.5]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman a','FontSize',22); 
+ylabel('TD50 (Gy)','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_fe_meta_a_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_fe_meta_a_td50.png...']);
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plot m vs a 
+% split at meta analysis TD50
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%find position of meta n
+[~,td50_idx] = min(abs(CGcomb.mLymanGrid.TD50-fe_td50(1)));   
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(td50_idx,:,:));
+
+cur_fig=figure(6); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(1./CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(1./CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_a(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_a(1) fe_a(1)],[fe_m(2) fe_m(3)],'k.-','LineWidth',1);
+plot([fe_a(2) fe_a(3)],[fe_m(1) fe_m(1)],'k.-','LineWidth',1);
+
+lgnd = legend([h_comb h_fe_meta],...
+    'Pooled best fit (projected)',...
+    ['Fixed-effects',10,'meta analysis best fit'],...
+    'Location','NorthEast');
+set(lgnd,'FontSize',18);
+
+xlim([0.1 1.5]);
+ylim([0.12 0.65]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman a','FontSize',22); ylabel('Lyman m','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_fe_meta_a_m'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_fe_meta_a_m.png...']);
+end
+
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%
 % slice at best combined model
@@ -172,18 +361,32 @@ llhds = CGcomb.mLymanGrid.loglikelihood(:,:,comb_n_idx);
 cur_fig=figure(10); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_td50(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_td50(1) fe_td50(1)],[fe_m(2) fe_m(3)],'k','LineWidth',1);
-plot([fe_td50(2) fe_td50(3)],[fe_m(1) fe_m(1)],'k','LineWidth',1);
+[~,Htmp]=contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',...
+    [low99,low95,low68],'LineWidth',2);hold on;
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_td50(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_td50(1) fe_td50(1)],[fe_m(2) fe_m(3)],'k.-.','LineWidth',1);
+plot([fe_td50(2) fe_td50(3)],[fe_m(1) fe_m(1)],'k.-.','LineWidth',1);
+h_re_meta=plot(re_td50(1),re_m(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_td50(1) re_td50(1)],[re_m(2) re_m(3)],'m.-.','LineWidth',1);
+plot([re_td50(2) re_td50(3)],[re_m(1) re_m(1)],'m.-.','LineWidth',1);
 
-lgnd = legend([h_comb h_meta],'Pooled best fit','Meta analysis best fit (projected)',...
+lgnd = legend([h_comb h_fe_meta h_re_meta],...
+    'Pooled best fit',...
+    ['Fixed-effects meta analysis',10,'best fit (projected)'],...
+    ['Random-effects meta analysis',10,'best fit (projected)'],...
     'Location','SouthEast');
+
 set(lgnd,'FontSize',18);
 
-xlim([15 28]);
-ylim([0.1 0.6]);
+xlim([15 32]);
+ylim([0.04 0.65]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -206,18 +409,30 @@ llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,comb_m_idx,:));
 cur_fig=figure(20); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanN,CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_n(1),fe_td50(1),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_n(1) fe_n(1)],[fe_td50(2) fe_td50(3)],'k','LineWidth',1);
-plot([fe_n(2) fe_n(3)],[fe_td50(1) fe_td50(1)],'k','LineWidth',1);
+[~,Htmp]=contour(CGcomb.mLymanN,CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_n(1),fe_td50(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_n(1) fe_n(1)],[fe_td50(2) fe_td50(3)],'k.-.','LineWidth',1);
+plot([fe_n(2) fe_n(3)],[fe_td50(1) fe_td50(1)],'k.-.','LineWidth',1);
+h_re_meta=plot(re_n(1),re_td50(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_n(1) re_n(1)],[re_td50(2) re_td50(3)],'m.-.','LineWidth',1);
+plot([re_n(2) re_n(3)],[re_td50(1) re_td50(1)],'m.-.','LineWidth',1);
 
-lgnd = legend([h_comb h_meta],'Pooled best fit','Meta analysis best fit (projected)',...
-    'Location','SouthEast');
+lgnd = legend([h_comb h_fe_meta h_re_meta],...
+    'Pooled best fit',...
+    ['Fixed-effects meta analysis',10,'best fit (projected)'],...
+    ['Random-effects meta analysis',10,'best fit (projected)'],...
+    'Location','NorthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.7 3]);
-ylim([10 33]);
+xlim([0.26 3.2]);
+ylim([12 34.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -240,17 +455,29 @@ llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(comb_td50_idx,:,:));
 cur_fig=figure(30); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_n(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_n(1) fe_n(1)],[fe_m(2) fe_m(3)],'k','LineWidth',1);
-plot([fe_n(2) fe_n(3)],[fe_m(1) fe_m(1)],'k','LineWidth',1);
+[~,Htmp]=contour(CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_n(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_n(1) fe_n(1)],[fe_m(2) fe_m(3)],'k.-.','LineWidth',1);
+plot([fe_n(2) fe_n(3)],[fe_m(1) fe_m(1)],'k.-.','LineWidth',1);
+h_re_meta=plot(re_n(1),re_m(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_n(1) re_n(1)],[re_m(2) re_m(3)],'m.-.','LineWidth',1);
+plot([re_n(2) re_n(3)],[re_m(1) re_m(1)],'m.-.','LineWidth',1);
 
-lgnd = legend([h_comb h_meta],'Pooled best fit','Meta analysis best fit (projected)',...
+lgnd = legend([h_comb h_fe_meta h_re_meta],...
+    'Pooled best fit',...
+    ['Fixed-effects meta analysis',10,'best fit (projected)'],...
+    ['Random-effects meta analysis',10,'best fit (projected)'],...
     'Location','SouthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.7 3.5]);
+xlim([0.26 4.4]);
 ylim([0.12 0.65]);
  
 set(gca,'xminortick','on','yminortick','on');
@@ -264,6 +491,7 @@ if do_print,
     disp(['Saving ',fig_loc,'map_llhd_comb_n_m.png...']);
 end
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % plot n vs log10(TD50)
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -274,60 +502,374 @@ llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,comb_m_idx,:));
 cur_fig=figure(40); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanN,log10(CGcomb.mLymanGrid.TD50),llhds,[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanN(comb_n_idx),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_n(1),log10(fe_td50(1)),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_n(1) fe_n(1)],[log10(fe_td50(2)) log10(fe_td50(3))],'k','LineWidth',1);
-plot([fe_n(2) fe_n(3)],[log10(fe_td50(1)) log10(fe_td50(1))],'k','LineWidth',1);
+[~,Htmp]=contour(log10(CGcomb.mLymanN),log10(CGcomb.mLymanGrid.TD50),llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(log10(CGcomb.mLymanN(comb_n_idx)),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(-fe_log10a(1),log10(fe_td50(1)),'kx','LineWidth',2,'MarkerSize',14);
+plot(-1.*[fe_log10a(1) fe_log10a(1)],log10([fe_td50(2) fe_td50(3)]),'k.-.','LineWidth',1);
+plot(-1.*[fe_log10a(2) fe_log10a(3)],log10([fe_td50(1) fe_td50(1)]),'k.-.','LineWidth',1);
+h_re_meta=plot(-re_log10a(1),log10(re_td50(1)),'mx','LineWidth',2,'MarkerSize',14);
+plot(-1.*[re_log10a(1) re_log10a(1)],log10([re_td50(2) re_td50(3)]),'m.-.','LineWidth',1);
+plot(-1.*[re_log10a(2) re_log10a(3)],log10([re_td50(1) re_td50(1)]),'m.-.','LineWidth',1);
 
-lgnd = legend([h_comb h_meta],'Pooled best fit','Meta analysis best fit (projected)',...
-    'Location','SouthEast');
+lgnd = legend([h_comb h_fe_meta h_re_meta],...
+    'Pooled best fit',...
+    ['Fixed-effects meta analysis',10,'best fit (projected)'],...
+    ['Random-effects meta analysis',10,'best fit (projected)'],...
+    'Location','NorthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.7 3]);
-ylim([1.05 1.55]);
+xlim([-0.2 0.75]);
+ylim([1.1 1.55]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
 set(gca,'FontSize',18)
-xlabel('Lyman n','FontSize',22); ylabel('log(TD50) (Gy)','FontSize',22);
+xlabel('log_{10}(n)','FontSize',22); 
+ylabel('log(TD50) (Gy)','FontSize',22);
 
 if do_print,
     set(cur_fig,'Color','w');
-    export_fig(cur_fig,[fig_loc,'map_llhd_comb_n_log10_td50'],'-png');
-    disp(['Saving ',fig_loc,'map_llhd_comb_n_log10_td50.png...']);
+    export_fig(cur_fig,[fig_loc,'map_llhd_comb_log10_n_log10_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_comb_log10_n_log10_td50.png...']);
 end
 
 
-%find position of meta n
-[~,m_idx] = min(abs(CGcomb.mLymanGrid.m-fe_m(1)));   
-llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,m_idx,:));
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,comb_m_idx,:));
 
-cur_fig=figure(4); clf reset;
+cur_fig=figure(50); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-contour(CGcomb.mLymanN,log10(CGcomb.mLymanGrid.TD50),llhds,[low99,low95,low68],'LineWidth',2);hold on; 
-h_comb=plot(CGcomb.mLymanN(comb_n_idx),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',12);
-h_meta=plot(fe_n(1),log10(fe_td50(1)),'kx','LineWidth',2,'MarkerSize',12);
-plot([fe_n(1) fe_n(1)],[log10(fe_td50(2)) log10(fe_td50(3))],'k','LineWidth',1);
-plot([fe_n(2) fe_n(3)],[log10(fe_td50(1)) log10(fe_td50(1))],'k','LineWidth',1);
+[~,Htmp]=contour(1./(CGcomb.mLymanN),CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(1./(CGcomb.mLymanN(comb_n_idx)),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_a(1),fe_td50(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_a(1) fe_a(1)],[fe_td50(2) fe_td50(3)],'k.-.','LineWidth',1);
+plot([fe_a(2) fe_a(3)],[fe_td50(1) fe_td50(1)],'k.-.','LineWidth',1);
+h_re_meta=plot(re_a(1),re_td50(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_a(1) re_a(1)],[re_td50(2) re_td50(3)],'m.-.','LineWidth',1);
+plot([re_a(2) re_a(3)],[re_td50(1) re_td50(1)],'m.-.','LineWidth',1);
 
-lgnd = legend([h_comb h_meta],'Pooled best fit (projected)','Meta analysis best fit',...
+lgnd = legend([h_comb h_fe_meta h_re_meta],...
+    'Pooled best fit',...
+    ['Fixed-effects meta analysis',10,'best fit (projected)'],...
+    ['Random-effects meta analysis',10,'best fit (projected)'],...
+    'Location','NorthWest');
+set(lgnd,'FontSize',18);
+
+xlim([0.1 1.5]);
+ylim([12 34.5]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman a','FontSize',22); 
+ylabel('TD50 (Gy)','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_comb_a_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_comb_a_td50.png...']);
+end
+
+%find position of meta n
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(comb_td50_idx,:,:));
+
+cur_fig=figure(60); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(1./CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(1./CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_fe_meta=plot(fe_a(1),fe_m(1),'kx','LineWidth',2,'MarkerSize',14);
+plot([fe_a(1) fe_a(1)],[fe_m(2) fe_m(3)],'k.-.','LineWidth',1);
+plot([fe_a(2) fe_a(3)],[fe_m(1) fe_m(1)],'k.-.','LineWidth',1);
+h_re_meta=plot(re_a(1),re_m(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_a(1) re_a(1)],[re_m(2) re_m(3)],'m.-.','LineWidth',1);
+plot([re_a(2) re_a(3)],[re_m(1) re_m(1)],'m.-.','LineWidth',1);
+
+lgnd = legend([h_comb h_fe_meta h_re_meta],...
+    'Pooled best fit',...
+    ['Fixed-effects meta analysis',10,'best fit (projected)'],...
+    ['Random-effects meta analysis',10,'best fit (projected)'],...
+    'Location','NorthEast');
+set(lgnd,'FontSize',18);
+
+xlim([0.1 1.5]);
+ylim([0.12 0.65]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman a','FontSize',22); 
+ylabel('Lyman m','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_comb_a_m'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_comb_a_m.png...']);
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plot TD50 vs m 
+% split at random meta analysis n
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%find position of meta n
+[~,n_idx] = min(abs(CGcomb.mLymanN-re_n(1)));   
+llhds = CGcomb.mLymanGrid.loglikelihood(:,:,n_idx);
+
+
+cur_fig=figure(100); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_re_meta=plot(re_td50(1),re_m(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_td50(1) re_td50(1)],[re_m(2) re_m(3)],'m.-','LineWidth',1);
+plot([re_td50(2) re_td50(3)],[re_m(1) re_m(1)],'m.-','LineWidth',1);
+
+lgnd = legend([h_comb h_re_meta],'Pooled best fit (projected)',['Random-effects',10,'Meta analysis best fit'],...
     'Location','SouthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.7 3]);
-ylim([1.05 1.55]);
+xlim([15 32]);
+ylim([0.04 0.65]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('TD_{50} (Gy)','FontSize',22); ylabel('Lyman m','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_re_meta_td50_m'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_re_meta_td50_m.png...']);
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plot TD50 vs a 
+% split at meta analysis m
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%find position of meta n
+[~,m_idx] = min(abs(CGcomb.mLymanGrid.m-re_m(1)));   
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,m_idx,:));
+
+cur_fig=figure(200); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(CGcomb.mLymanN,CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_re_meta=plot(re_n(1),re_td50(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_n(1) re_n(1)],[re_td50(2) re_td50(3)],'m.-','LineWidth',1);
+plot([re_n(2) re_n(3)],[re_td50(1) re_td50(1)],'m.-','LineWidth',1);
+
+lgnd = legend([h_comb h_re_meta],...
+    'Pooled best fit (projected)',...
+    ['Random-effects',10,'meta analysis best fit'],...
+    'Location','NorthEast');
+set(lgnd,'FontSize',18);
+
+xlim([0.26 3.2]);
+ylim([12 34.5]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman n','FontSize',22); ylabel('TD50 (Gy)','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_re_meta_n_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_re_meta_n_td50.png...']);
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plot m vs a 
+% split at meta analysis TD50
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%find position of meta n
+[~,td50_idx] = min(abs(CGcomb.mLymanGrid.TD50-re_td50(1)));   
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(td50_idx,:,:));
+
+cur_fig=figure(300); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_re_meta=plot(re_n(1),re_m(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_n(1) re_n(1)],[re_m(2) re_m(3)],'m.-','LineWidth',1);
+plot([re_n(2) re_n(3)],[re_m(1) re_m(1)],'m.-','LineWidth',1);
+
+lgnd = legend([h_comb h_re_meta],...
+    'Pooled best fit (projected)',...
+    ['Random-effects',10,'meta analysis best fit'],...
+    'Location','SouthEast');
+set(lgnd,'FontSize',18);
+
+xlim([0.26 4.4]);
+ylim([0.12 0.65]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman n','FontSize',22); ylabel('Lyman m','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_re_meta_n_m'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_re_meta_n_m.png...']);
+end
+
+%find position of meta n
+[~,m_idx] = min(abs(CGcomb.mLymanGrid.m-re_m(1)));   
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(:,m_idx,:));
+
+cur_fig=figure(400); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(log10(CGcomb.mLymanN),log10(CGcomb.mLymanGrid.TD50),llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(log10(CGcomb.mLymanN(comb_n_idx)),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',14);
+h_re_meta=plot(-re_log10a(1),log10(re_td50(1)),'mx','LineWidth',2,'MarkerSize',14);
+plot(-1.*[re_log10a(1) re_log10a(1)],log10([re_td50(2) re_td50(3)]),'m.-','LineWidth',1);
+plot(-1.*[re_log10a(2) re_log10a(3)],log10([re_td50(1) re_td50(1)]),'m.-','LineWidth',1);
+
+lgnd = legend([h_comb h_re_meta],...
+    'Pooled best fit (projected)',...
+    ['Random-effects',10,'meta analysis best fit'],...
+    'Location','NorthEast');
+set(lgnd,'FontSize',18);
+
+xlim([-0.2 0.75]);
+ylim([1.1 1.55]);
 
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
 set(gca,'FontSize',18)
-xlabel('Lyman n','FontSize',22); ylabel('log(TD50) (Gy)','FontSize',22);
+xlabel('log_{10}(n)','FontSize',22); ylabel('log(TD50) (Gy)','FontSize',22);
 
 if do_print,
     set(cur_fig,'Color','w');
-    export_fig(cur_fig,[fig_loc,'map_llhd_meta_n_log10_td50'],'-png');
-    disp(['Saving ',fig_loc,'map_llhd_meta_n_log10_td50.png...']);
+    export_fig(cur_fig,[fig_loc,'map_llhd_re_meta_log10_n_log10_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_re_meta_log10_n_log10_td50.png...']);
 end
 
+
+cur_fig=figure(500); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(1./(CGcomb.mLymanN),CGcomb.mLymanGrid.TD50,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(1./(CGcomb.mLymanN(comb_n_idx)),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_re_meta=plot(re_a(1),re_td50(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_a(1) re_a(1)],[re_td50(2) re_td50(3)],'m.-','LineWidth',1);
+plot([re_a(2) re_a(3)],[re_td50(1) re_td50(1)],'m.-','LineWidth',1);
+
+lgnd = legend([h_comb h_re_meta],...
+    'Pooled best fit (projected)',...
+    ['Random-effects',10,'meta analysis best fit'],...
+    'Location','NorthWest');
+set(lgnd,'FontSize',18);
+
+xlim([0.1 1.5]);
+ylim([12 34.5]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman a','FontSize',22); 
+ylabel('TD50 (Gy)','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_re_meta_a_td50'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_re_meta_a_td50.png...']);
+end
+
+
+%find position of meta n
+[~,td50_idx] = min(abs(CGcomb.mLymanGrid.TD50-re_td50(1)));   
+llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(td50_idx,:,:));
+cur_fig=figure(600); clf reset;
+set(cur_fig,'Position',ss_four2three);
+
+[~,Htmp]=contour(1./CGcomb.mLymanN,CGcomb.mLymanGrid.m,llhds,[low99,low95,low68],'LineWidth',2);hold on; 
+Cld = get(Htmp,'Children');
+for j=1:length(Cld)
+    if strcmp(get(Cld(j),'Type'),'patch')
+        set(Cld(j),'EdgeColor',cntr_colors{j})
+    end
+end
+h_comb=plot(1./CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
+h_re_meta=plot(re_a(1),re_m(1),'mx','LineWidth',2,'MarkerSize',14);
+plot([re_a(1) re_a(1)],[re_m(2) re_m(3)],'m.-','LineWidth',1);
+plot([re_a(2) re_a(3)],[re_m(1) re_m(1)],'m.-','LineWidth',1);
+
+lgnd = legend([h_comb h_re_meta],...
+    'Pooled best fit (projected)',...
+    ['Random-effects',10,'meta analysis best fit'],...
+    'Location','NorthEast');
+set(lgnd,'FontSize',18);
+
+xlim([0.1 1.5]);
+ylim([0.12 0.65]);
+ 
+set(gca,'xminortick','on','yminortick','on');
+set(gca,'box','on');
+set(gca,'FontSize',18)
+xlabel('Lyman a','FontSize',22); ylabel('Lyman m','FontSize',22);
+
+if do_print,
+    set(cur_fig,'Color','w');
+    export_fig(cur_fig,[fig_loc,'map_llhd_re_meta_a_m'],'-png');
+    disp(['Saving ',fig_loc,'map_llhd_re_meta_a_m.png...']);
+end
 end
