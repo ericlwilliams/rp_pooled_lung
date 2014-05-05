@@ -29,7 +29,8 @@ fe_a = 10.^(fe_log10a);
 %fe_n = [(1/fe_a(1)) ((1/fe_a(1))-1.96.*fe_n_se(1)) ((1/fe_a(1))+1.96.*fe_n_se(2))];
 
 % Option 2. Meta anlysis resuls in rp_meta.R
-fe_n = [0.6832,0.4464,0.9199];
+% fe_n = [0.6832,0.4464,0.9199];
+fe_n = [0.7574,0.4394,1.0754];
 
 
 %% random effects meta analysis results [val,95% CIs]
@@ -44,8 +45,8 @@ re_a = 10.^(re_log10a);
 %re_n = [(1/re_a(1)) ((1/re_a(1))-1.96.*re_n_se(1)) ((1/re_a(1))+1.96.*re_n_se(2))];
 
 % Option 2. Meta analysis results for n from rp_meta.R
-% re_n = [1.294,0.117,2.47];
-re_n = [1.1166,0.2621,1.971];
+%re_n = [1.1166,0.2621,1.971];
+re_n = [1.2372,0.047,2.427];
 
 
 
@@ -89,15 +90,15 @@ low99 = mx_llhd -0.5*(chi2inv(0.99,3));
 [~,n_idx] = min(abs(CGcomb.mLymanN-fe_n(1)));   
 llhds = CGcomb.mLymanGrid.loglikelihood(:,:,n_idx);
 
-
 cur_fig=figure(1); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
 [~,Htmp]=contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',[low99,low95,low68],'LineWidth',2);hold on; 
 Cld = get(Htmp,'Children');
+
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -142,7 +143,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -188,7 +189,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -227,7 +228,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(log10(CGcomb.mLymanN(comb_n_idx)),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',14);
@@ -272,7 +273,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(1./(CGcomb.mLymanN(comb_n_idx)),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -318,7 +319,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(1./CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -366,7 +367,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -413,7 +414,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -459,7 +460,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -506,7 +507,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(log10(CGcomb.mLymanN(comb_n_idx)),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',14);
@@ -549,7 +550,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(1./(CGcomb.mLymanN(comb_n_idx)),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -592,7 +593,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(1./CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -634,7 +635,6 @@ end
 [~,n_idx] = min(abs(CGcomb.mLymanN-re_n(1)));   
 llhds = CGcomb.mLymanGrid.loglikelihood(:,:,n_idx);
 
-
 cur_fig=figure(100); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
@@ -642,7 +642,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanGrid.TD50(comb_td50_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -685,7 +685,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -730,7 +730,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -769,7 +769,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(log10(CGcomb.mLymanN(comb_n_idx)),log10(CGcomb.mLymanGrid.TD50(comb_td50_idx)),'r+','LineWidth',2,'MarkerSize',14);
@@ -805,7 +805,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(1./(CGcomb.mLymanN(comb_n_idx)),CGcomb.mLymanGrid.TD50(comb_td50_idx),'r+','LineWidth',2,'MarkerSize',14);
@@ -838,6 +838,7 @@ end
 %find position of meta n
 [~,td50_idx] = min(abs(CGcomb.mLymanGrid.TD50-re_td50(1)));   
 llhds = squeeze(CGcomb.mLymanGrid.loglikelihood(td50_idx,:,:));
+
 cur_fig=figure(600); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
@@ -845,7 +846,7 @@ set(cur_fig,'Position',ss_four2three);
 Cld = get(Htmp,'Children');
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
-        set(Cld(j),'EdgeColor',cntr_colors{j})
+        set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})
     end
 end
 h_comb=plot(1./CGcomb.mLymanN(comb_n_idx),CGcomb.mLymanGrid.m(comb_m_idx),'r+','LineWidth',2,'MarkerSize',14);
