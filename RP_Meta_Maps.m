@@ -5,49 +5,53 @@ function RP_Meta_Maps
 % - slice combined llhd matrix at meta points, slice of combined llhd NOT
 % projection
 %%%%%%%%%%%%%%%%%%%%%%%%
+one_sided_var = true;
+
 cntr_colors = {[1 0 0], [0 1 0], [0 0 1]};
 % cm1 = colormap(jet(300)); cm1=cm1(1:256,:); %cm1(end,:) = 0.5;
 % cm2 = colormap(jet(10));
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%
 % Meta analysis results
-% data from rp_meta.R on eMac
-
-%% %%%%% Two options for n
-% 1. calculate n from meta-analysis a) 
-% 2. use meta analysis n
+% data from rpMetaAnalysis.m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% fixed effects meta analysis results [val,95% CIs]
+% one-sided variance
+if one_sided_var,
+    fe_a = [1.103,0.6382,1.567]
+% fe_a = [1.137,0.7409,1.533];
+%     fe_n = [0.8617,0.4425,1.281];
+    fe_n = [0.8603,0.4404,1.28]
 
-%% fixed effects meta analysis results [val,95% CIs]
-fe_m = [0.21,0.14,0.28];
-fe_td50 = [21.88,15.9,27.8];
-fe_log10a = [-0.0506,-0.2924,0.1038];
-fe_a = 10.^(fe_log10a);
-% Option 1. SE from CI to propigate error to n
-%fe_a_se = [fe_a(1)-fe_a(2),fe_a(3)-fe_a(1)]./(1.96*fe_a(1));
-%fe_n_se = fliplr((1/fe_a(1)).*fe_a_se);
-%fe_n = [(1/fe_a(1)) ((1/fe_a(1))-1.96.*fe_n_se(1)) ((1/fe_a(1))+1.96.*fe_n_se(2))];
+    fe_td50 = [22.94,17.24,28.63];
+    fe_m = [0.3066,0.2221,0.3911];
+else
+    % two-sided variance
+    fe_a = [0.8878,0.5052,1.27];
+    fe_n = [0.7574,0.4394,1.075];
+    fe_td50 = [21.89,15.96,27.81];
+    fe_m = [0.2144,0.14,0.2888];
+end
 
-% Option 2. Meta anlysis resuls in rp_meta.R
-% fe_n = [0.6832,0.4464,0.9199];
-fe_n = [0.7574,0.4394,1.0754];
-
+fe_log10a = log10(fe_a);
 
 %% random effects meta analysis results [val,95% CIs]
-re_m = [0.29,0.13,0.44];
-re_td50 = [21.88,15.9,27.8];
-re_log10a = [-0.0862,-0.69897,0.15533];
-re_a = 10.^(re_log10a);
-
-% Option 1. calculate SE from CI to propigate error to n
-%re_a_se = [re_a(1)-re_a(2),re_a(3)-re_a(1)]./(1.96*re_a(1));
-%re_n_se = fliplr((1/re_a(1)).*re_a_se);
-%re_n = [(1/re_a(1)) ((1/re_a(1))-1.96.*re_n_se(1)) ((1/re_a(1))+1.96.*re_n_se(2))];
-
-% Option 2. Meta analysis results for n from rp_meta.R
-%re_n = [1.1166,0.2621,1.971];
-re_n = [1.2372,0.047,2.427];
-
+if one_sided_var,
+    % one-sided variance
+    re_a = [1.095,0.4141,1.776]
+% re_a = [1.105,0.4588,1.75];
+%     re_n = [1.07,0.1695,1.97];
+    re_n = [1.071,0.1658,1.976]
+    re_td50 = [24.24,14.46,34.03];
+    re_m = [0.3438,0.1412,0.5463];
+else
+    % two-sided variance
+    re_a = [0.8169,0.2039,1.43];
+    re_n = [1.237,0.04703,2.427];
+    re_td50 = [21.89,15.96,27.81];
+    re_m = [0.287,0.1311,0.4428];
+end
+re_log10a = log10(re_a);
 
 
 screen_size=get(0,'ScreenSize');

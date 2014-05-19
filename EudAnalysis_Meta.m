@@ -35,7 +35,7 @@ if 1
     load(fn_nki,'CGobjs'); CGnki = CGobjs(1);
     load(fn_msk,'CGobjs'); CGmsk = CGobjs(1);
     
-    
+    % combine institutes into pooled classOutcomeAnalysis
     CGcomb = CGrtog;
     CGcomb = CGcomb.fAddPatient(CGum.mGrp);
     CGcomb = CGcomb.fAddPatient(CGnki.mGrp);
