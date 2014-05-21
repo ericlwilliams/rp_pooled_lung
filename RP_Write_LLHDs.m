@@ -9,7 +9,7 @@ function RP_Write_LLHDs
     lkb_td50 = CGcomb.mLymanGrid.TD50;
     lkb_m = CGcomb.mLymanGrid.m;
 
-    fname='Z:/elw/MATLAB/meta_analy/meta_data/lkb_comb_llhds.m';
+    fname='Z:/elw/MATLAB/meta_analy/meta_data/lkb_comb_llhds.mat';
     save(fname,'lkb_llhds','lkb_n','lkb_td50','lkb_m');
     
     

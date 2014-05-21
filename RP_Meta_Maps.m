@@ -13,44 +13,26 @@ cntr_colors = {[1 0 0], [0 1 0], [0 0 1]};
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%
 % Meta analysis results
-% data from rpMetaAnalysis.m
+% data from RP_Meta_Analysis.m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % fixed effects meta analysis results [val,95% CIs]
-% one-sided variance
-if one_sided_var,
-    fe_a = [1.103,0.6382,1.567]
-% fe_a = [1.137,0.7409,1.533];
-%     fe_n = [0.8617,0.4425,1.281];
-    fe_n = [0.8603,0.4404,1.28]
 
-    fe_td50 = [22.94,17.24,28.63];
-    fe_m = [0.3066,0.2221,0.3911];
-else
-    % two-sided variance
-    fe_a = [0.8878,0.5052,1.27];
-    fe_n = [0.7574,0.4394,1.075];
-    fe_td50 = [21.89,15.96,27.81];
-    fe_m = [0.2144,0.14,0.2888];
-end
+% two-sided variance
+fe_a = [0.8878,0.5052,1.27];
+fe_n = [0.7574,0.4394,1.075];
+fe_td50 = [21.89,15.96,27.81];
+fe_m = [0.2144,0.14,0.2888];
 
 fe_log10a = log10(fe_a);
 
 %% random effects meta analysis results [val,95% CIs]
-if one_sided_var,
-    % one-sided variance
-    re_a = [1.095,0.4141,1.776]
-% re_a = [1.105,0.4588,1.75];
-%     re_n = [1.07,0.1695,1.97];
-    re_n = [1.071,0.1658,1.976]
-    re_td50 = [24.24,14.46,34.03];
-    re_m = [0.3438,0.1412,0.5463];
-else
-    % two-sided variance
-    re_a = [0.8169,0.2039,1.43];
-    re_n = [1.237,0.04703,2.427];
-    re_td50 = [21.89,15.96,27.81];
-    re_m = [0.287,0.1311,0.4428];
-end
+
+% two-sided variance
+re_a = [0.8169,0.2039,1.43];
+re_n = [1.237,0.04703,2.427];
+re_td50 = [21.89,15.96,27.81];
+re_m = [0.287,0.1311,0.4428];
+
 re_log10a = log10(re_a);
 
 
@@ -373,9 +355,23 @@ llhds = CGcomb.mLymanGrid.loglikelihood(:,:,comb_n_idx);
 cur_fig=figure(10); clf reset;
 set(cur_fig,'Position',ss_four2three);
 
-[~,Htmp]=contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',...
+% TMP
+%  low68 = mx_llhd - 0.5* (1);
+
+[Ctmp,Htmp]=contour(CGcomb.mLymanGrid.TD50,CGcomb.mLymanGrid.m,llhds',...
     [low99,low95,low68],'LineWidth',2);hold on;
 Cld = get(Htmp,'Children');
+
+% % TMP
+% c_td50 = Ctmp(1,:);
+% [~,c_68_idx] = min(abs(c_td50-low68));
+% [~,c_95_idx] = min(abs(c_td50-low95));
+% [~,c_99_idx] = min(abs(c_td50-low99));
+% c_td50_low68 = c_td50(c_68_idx+1:end);
+% c_td50_low95 = c_td50(c_95_idx+1:c_68_idx-1);
+% c_td50_low99 = c_td50(c_99_idx+1:c_95_idx-1);
+
+
 for j=1:length(Cld)
     if strcmp(get(Cld(j),'Type'),'patch')
         set(Cld(j),'EdgeColor',cntr_colors{j+(3-length(Cld))})

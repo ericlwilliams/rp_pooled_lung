@@ -17,16 +17,6 @@ fn='Z:/elw/MATLAB/meta_analy/meta_data/lkb_comb_llhds.mat';
 load(fn);% lkb_llhds, lkb_n, lkb_m, lkb_td50
 
 
-%% from one-sided meta
-% re_a = [1.095,0.4141,1.776];
-% % re_n = [1.071,0.1658,1.976]
-% re_td50 = [24.24,14.46,34.03];
-% re_m = [0.3438,0.1412,0.5463];
-% 
-% fe_a = [1.103,0.6382,1.567];
-% % fe_n = [0.8603,0.4404,1.28]
-% fe_m = [0.3066,0.2221,0.3911];
-% fe_td50 = [22.94,17.24,28.63];
 
 %% from two-sided meta
 fe_a = [0.8431,0.437,1.249];

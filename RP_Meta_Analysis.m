@@ -14,44 +14,45 @@ disp(['do_propigate_n_errors: ',num2str(do_propigate_n_errors)]);
 disp('==========');
 
 fig_loc = 'Z:\elw\MATLAB\meta_analy\slides\figures\latest\';
+lkb_loc = 'Z:/elw/MATLAB/meta_analy/meta_data/lkb_parameters.mat';
+
+if isunix %on mac
+    fig_loc = strrep(fig_loc,'Z:/elw/','/Users/elw/Documents/');
+    lkb_loc = strrep(lkb_loc,'Z:/elw/','/Users/elw/Documents/');
+end
+
+% lkb values from RP_Pooled_Results.m
+load(lkb_loc,'lkb_vals','lkb_lcl','lkb_ucl');
+
+
+pld_vals = lkb_vals(5,:);  
+pld_lcl = lkb_lcl(5,:);  
+pld_ucl = lkb_ucl(5,:);  
+
+lkb_vals = lkb_vals(1:4,:);
+lkb_lcl = lkb_lcl(1:4,:);
+lkb_ucl = lkb_ucl(1:4,:);
+       
 %             msk,   nki,   rtog,  umich
-lkb_log10a = [-0.34, -1,  0.33, 0.09];
-lkb_log10a_lcl = [-Inf, -Inf, -0.126, -0.199];
-lkb_log10a_ucl = [0.137, 0.48, 0.827, 0.252];
+% lkb_log10a = [-0.34, -1,  0.33, 0.09];
+% lkb_log10a_lcl = [-Inf, -Inf, -0.126, -0.199];
+% lkb_log10a_ucl = [0.137, 0.48, 0.827, 0.252];
+% 
+% lkb_log10n = -lkb_log10a;
+% lkb_log10n_lcl = -lkb_log10a_lcl;
+% lkb_log10n_ucl = -lkb_log10a_ucl;
+% 
+% 
+% disp(['a: ',num2str(10.^(lkb_log10a))]);
+% disp(['a lcl: ',num2str(10.^(lkb_log10a_lcl))]);
+% disp(['a ucl: ',num2str(10.^(lkb_log10a_ucl))]);
+% disp(' ');
+% disp(['n: ',num2str(10.^(lkb_log10n))]);
+% disp(['n lcl: ',num2str(10.^(lkb_log10n_ucl))]);
+% disp(['n ucl: ',num2str(10.^(lkb_log10n_lcl))]);
 
-lkb_log10n = -lkb_log10a;
-lkb_log10n_lcl = -lkb_log10a_lcl;
-lkb_log10n_ucl = -lkb_log10a_ucl;
 
 
-disp(['a: ',num2str(10.^(lkb_log10a))]);
-disp(['a lcl: ',num2str(10.^(lkb_log10a_lcl))]);
-disp(['a ucl: ',num2str(10.^(lkb_log10a_ucl))]);
-disp(' ');
-disp(['n: ',num2str(10.^(lkb_log10n))]);
-disp(['n lcl: ',num2str(10.^(lkb_log10n_ucl))]);
-disp(['n ucl: ',num2str(10.^(lkb_log10n_lcl))]);
-
-%return
-% inst x param
-%            a,    n,    td50, m
-lkb_vals = [[0.457, 2.188, 14.9, 0.42];... %msk
-            [0.1,  10,   17,   0.61];... % nki
-            [2.138, 0.468, 45.9, 0.21];... % rtog
-            [1.23, 0.81, 22.1, 0.16]]; % umich
-        
-        % errors with corrected log10(a/n) -> a/n
-        % errors on n from invertign errors on a         
-   lkb_lcl = [[0.1,  0.729, 7.9,  0.24];...
-           [0.1,  0.331, 11.5, 0.41];...
-           [0.748, 0.14894, 20.3, 0.12];...
-           [0.6324, 0.55976, 16.1, 0.10]];
-       
-       lkb_ucl = [[1.37, 10,   42.0,  0.78];...
-           [3.02, 10,   100.0, 1.09];...
-           [6.7143, 1.33, 87.2,  0.41];...
-           [1.787, 1.32, 29.1,  0.29]];
-       
    
        
 %        lkb_vals = [[0.46, 2.17, 14.9, 0.42];... %msk
@@ -99,11 +100,6 @@ if do_propigate_n_errors, % recalc errors on n from error propigation
     lkb_n_lcl = lkb_n - (1.96*lkb_n_lse);
     
 end
-       
-       
-pld_vals = [0.69,1.45,19.2,0.38];
-pld_lcl = [0.33,0.94,14.3,0.29];
-pld_ucl = [1.06,3.03,26.2,0.51];
 
 if do_one_sided_vars,
     % choose which half of ci to use
