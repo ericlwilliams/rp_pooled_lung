@@ -17,7 +17,7 @@ disp(['do_one_sided_vars: ',num2str(do_one_sided_vars)]);
 disp(['do_propigate_n_errors: ',num2str(do_propigate_n_errors)]);
 disp('==========');
 
-fig_loc = 'Z:\elw\MATLAB\meta_analy\slides\figures\latest\';
+fig_loc = 'Z:/elw/MATLAB/meta_analy/slides/figures/latest/';
 lkb_loc = 'Z:/elw/MATLAB/meta_analy/meta_data/lkb_parameters.mat';
 save_loc = 'Z:/elw/MATLAB/meta_analy/meta_data/lkb_meta_parameters.mat';
 

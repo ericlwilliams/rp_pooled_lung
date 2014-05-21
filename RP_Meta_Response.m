@@ -1,4 +1,6 @@
 function RP_Meta_Response
+% Plots response functions of both fe/re meta analyses with 
+% corresponding pooled response function
 
 screen_size=get(0,'ScreenSize');
 ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
@@ -7,56 +9,78 @@ fig_loc = 'Z:\elw\MATLAB\meta_analy\slides\figures\heterogeneity\latest\';
 do_print = true;
 cur_fig_ctr = 1;
 
-
-% pld_vals = [0.69,1.45,19.2,0.38];
-% pld_lcl = [0.33,0.94,14.3,0.29];
-% pld_ucl = [1.06,3.03,26.2,0.51];
-
 % loglikelihoods extracted from analysis objet in RP_Write_LLHDs.m
 fn='Z:/elw/MATLAB/meta_analy/meta_data/lkb_comb_llhds.mat';
-    
+
+% paramters from meta-analysis fit (RP_Meta_Analysis.m)
+lkb_meta_loc = 'Z:/elw/MATLAB/meta_analy/meta_data/lkb_meta_parameters.mat';
+
 if isunix %on mac
     fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
+    lkb_meta_loc = strrep(lkb_meta_loc,'Z:/elw/','/Users/elw/Documents/');
+
 end
+
+% fixed effects meta analysis results [val,95% CIs]
+load(lkb_meta_loc,'fe_vals','fe_lcl','fe_ucl',...
+                  're_vals','re_lcl','re_ucl');
+% Fixed-effects
+fe_a = [fe_vals(1) fe_lcl(1) fe_ucl(1)];
+fe_n = [fe_vals(2) fe_lcl(2) fe_ucl(2)];
+fe_td50 = [fe_vals(3) fe_lcl(3) fe_ucl(3)];
+fe_m = [fe_vals(4) fe_lcl(4) fe_ucl(4)];
+fe_log10a = log10(fe_a);
+
+
+% Random-effects
+re_a = [re_vals(1) re_lcl(1) re_ucl(1)];
+re_n = [re_vals(2) re_lcl(2) re_ucl(2)];
+re_td50 = [re_vals(3) re_lcl(3) re_ucl(3)];
+re_m = [re_vals(4) re_lcl(4) re_ucl(4)];
+re_log10a = log10(re_a);
 
 
 
 load(fn);% lkb_llhds, lkb_n, lkb_m, lkb_td50
 
+% Get pooled LKB parameters, specifying n from meta-analysis
 
+[~,re_n_ind] = min(abs(lkb_n-re_n(1)));
+re_ll = lkb_llhds(:,:,re_n_ind);
+[re_mx,re_mx_ind] = max(re_ll(:));
+[re_td50_ind,re_m_ind] = ind2sub(size(re_ll),re_mx_ind);
+pld_re_vals = [1/re_n(1) re_n(1) lkb_td50(re_td50_ind) lkb_m(re_m_ind)];
+ disp(['Best Pooled RE (a,n,td50,m) = (',num2str(pld_re_vals),')']);
 
-%% from two-sided meta
-fe_a = [0.8431,0.437,1.249];
-% fe_n = [0.757,0.4388,1.075];
-fe_td50 = [21.89,15.96,27.81] ;
-fe_m = [0.2144,0.14,0.2888];
+ [~,fe_n_ind] = min(abs(lkb_n-fe_n(1)));
+fe_ll = lkb_llhds(:,:,fe_n_ind);
+[fe_mx,fe_mx_ind] = max(fe_ll(:));
+[fe_td50_ind,fe_m_ind] = ind2sub(size(fe_ll),fe_mx_ind);
+pld_fe_vals = [1/fe_n(1) fe_n(1) lkb_td50(fe_td50_ind) lkb_m(fe_m_ind)];
+ disp(['Best Pooled FE (a,n,td50,m) = (',num2str(pld_fe_vals),')']);
 
-re_a = [0.8035,0.1965,1.411];
-% re_n = [1.239,0.04706,2.431];
-re_td50 = [21.89,15.96,27.81];
-re_m = [0.287,0.1311,0.4428];
-
-% a=0.69;
-cur_re_a = re_a(1);
-[~,re_a_ind] = min(abs((1./lkb_n)-cur_re_a)); 
-ll = lkb_llhds(:,:,re_a_ind); % log likelihood of log10(a) = loga
-re_mx = max(ll(:));
-[re_xx,re_yy] = find(ll == re_mx); % the coefficients
-cur_re_td50 = lkb_td50(re_xx);
-cur_re_m = lkb_m(re_yy);
-disp(['Best Pooled RE (td50,m,a) = (',num2str([cur_re_td50,cur_re_m,cur_re_a]),')']);
-pld_re_vals = [cur_re_a, 1/cur_re_a, cur_re_td50, cur_re_m];
-
-
-cur_fe_a = fe_a(1);
-[~,fe_a_ind] = min(abs((1./lkb_n)-cur_fe_a)); 
-ll = lkb_llhds(:,:,fe_a_ind); % log likelihood of log10(a) = loga
-fe_mx = max(ll(:));
-[fe_xx,fe_yy] = find(ll == fe_mx); % the coefficients
-cur_fe_td50 = lkb_td50(fe_xx);
-cur_fe_m = lkb_m(fe_yy);
-disp(['Best Pooled FE (td50,m,a) = (',num2str([cur_fe_td50,cur_fe_m,cur_fe_a]),')']);
-pld_fe_vals = [cur_fe_a, 1/cur_fe_a, cur_fe_td50, cur_fe_m];
+ 
+ % % a=0.69;
+% cur_re_a = re_a(1);
+% [~,re_a_ind] = min(abs((1./lkb_n)-cur_re_a)); 
+% ll = lkb_llhds(:,:,re_a_ind); % log likelihood of log10(a) = loga
+% re_mx = max(ll(:));
+% [re_xx,re_yy] = find(ll == re_mx); % the coefficients
+% cur_re_td50 = lkb_td50(re_xx);
+% cur_re_m = lkb_m(re_yy);
+% disp(['Best Pooled RE (td50,m,a) = (',num2str([cur_re_td50,cur_re_m,cur_re_a]),')']);
+% pld_re_vals = [cur_re_a, 1/cur_re_a, cur_re_td50, cur_re_m];
+% 
+% 
+% cur_fe_a = fe_a(1);
+% [~,fe_a_ind] = min(abs((1./lkb_n)-cur_fe_a)); 
+% ll = lkb_llhds(:,:,fe_a_ind); % log likelihood of log10(a) = loga
+% fe_mx = max(ll(:));
+% [fe_xx,fe_yy] = find(ll == fe_mx); % the coefficients
+% cur_fe_td50 = lkb_td50(fe_xx);
+% cur_fe_m = lkb_m(fe_yy);
+% disp(['Best Pooled FE (td50,m,a) = (',num2str([cur_fe_td50,cur_fe_m,cur_fe_a]),')']);
+% pld_fe_vals = [cur_fe_a, 1/cur_fe_a, cur_fe_td50, cur_fe_m];
 
 
 
