@@ -69,9 +69,9 @@ load(fn,'CGcomb');
 % low99 = mx_llhd-0.5* (3^2);
 
 %double check
-low68 = mx_llhd -0.5*(chi2inv(0.68,3));
-low95 = mx_llhd -0.5*(chi2inv(0.95,3));
-low99 = mx_llhd -0.5*(chi2inv(0.99,3));
+low68 = mx_llhd -0.5*(chi2inv(0.68,1));
+low95 = mx_llhd -0.5*(chi2inv(0.95,1));
+low99 = mx_llhd -0.5*(chi2inv(0.99,1));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%

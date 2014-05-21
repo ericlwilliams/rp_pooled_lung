@@ -8,6 +8,12 @@ fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta.mat
 lkb_save_loc='Z:/elw/MATLAB/meta_analy/meta_data/lkb_parameters.mat';
 
 pld_data = {'CGmsk','CGnki','CGrtog','CGum','CGcomb'};
+protocols = {'MSK','NKI','RTOG','UMich','Comb'};
+
+% TMP
+fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta_comb.mat';
+pld_data = {'CGcomb'};
+protocols = {'Comb'};
 
 if isunix %on mac
     fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
@@ -21,7 +27,7 @@ lkb_vals = zeros(length(pld_data),4);
 lkb_lcl = zeros(length(pld_data),4);
 lkb_ucl = zeros(length(pld_data),4);
 
-protocols = {'MSK','NKI','RTOG','UMich','Comb'};
+
 
 for i=1:length(pld_data)
     CGdata=load(fn,pld_data{i});
@@ -42,12 +48,9 @@ for i=1:length(pld_data)
     llhd_m = max(max(CGdata.mLymanGrid.loglikelihood,[],3),[],1);
     
     
-    % Fan's method (assumes df=1), underestimate confidence intervals     
-     low68 = llhd_mx-0.5* (1);
-     low95 = llhd_mx-0.5* (1.96^2);
 
-%      low68 = llhd_mx -0.5*(chi2inv(0.68,3));
-%      low95 = llhd_mx -0.5*(chi2inv(0.95,3));
+     low68 = llhd_mx -0.5*(chi2inv(0.68,1));
+     low95 = llhd_mx -0.5*(chi2inv(0.95,1));
 
     % 68% point of td50
     [td50, td50_68ci] = ConfidenceInterval(CGdata.mLymanGrid.TD50,llhd_td50, low68);

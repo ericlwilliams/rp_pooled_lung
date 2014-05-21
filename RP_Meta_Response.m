@@ -14,6 +14,13 @@ cur_fig_ctr = 1;
 
 % loglikelihoods extracted from analysis objet in RP_Write_LLHDs.m
 fn='Z:/elw/MATLAB/meta_analy/meta_data/lkb_comb_llhds.mat';
+    
+if isunix %on mac
+    fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
+end
+
+
+
 load(fn);% lkb_llhds, lkb_n, lkb_m, lkb_td50
 
 
@@ -60,7 +67,7 @@ doses = [0:0.1:25]';
 % lyman probability
 lkb_re_prob = normcdf((doses-pld_re_vals(3))./(pld_re_vals(3)*pld_re_vals(4)),0,1);
 % low68 = mx - 0.5*(1*2);
-lkb_re_llhd_low68 = re_mx - 0.5*(chi2inv(0.68,3));
+lkb_re_llhd_low68 = re_mx - 0.5*(chi2inv(0.68,1));
 lkb_re_low68_td50_m_ctr = contourc(lkb_td50,lkb_m,ll',[lkb_re_llhd_low68 lkb_re_llhd_low68]);
 lkb_re_low68_td50 = lkb_re_low68_td50_m_ctr(1,2:end);
 lkb_re_low68_m = lkb_re_low68_td50_m_ctr(2,2:end);
@@ -109,8 +116,9 @@ fe_m_dist_68_ul = fe_m(1)+fe_m_usd;
 % FE lyman probability
 lkb_fe_prob = normcdf((doses-pld_fe_vals(3))./(pld_fe_vals(3)*pld_fe_vals(4)),0,1);
 % low68 = mx - 0.5*(1*2);
-lkb_fe_llhd_low68 = fe_mx - 0.5*(chi2inv(0.68,3));
+lkb_fe_llhd_low68 = fe_mx - 0.5*(chi2inv(0.68,1));
 lkb_fe_low68_td50_m_ctr = contourc(lkb_td50,lkb_m,ll',[lkb_fe_llhd_low68 lkb_fe_llhd_low68]);
+
 lkb_fe_low68_td50 = lkb_fe_low68_td50_m_ctr(1,2:end);
 lkb_fe_low68_m = lkb_fe_low68_td50_m_ctr(2,2:end);
 
