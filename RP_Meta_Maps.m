@@ -5,36 +5,15 @@ function RP_Meta_Maps
 % - slice combined llhd matrix at meta points, slice of combined llhd NOT
 % projection
 %%%%%%%%%%%%%%%%%%%%%%%%
-one_sided_var = true;
-
-cntr_colors = {[1 0 0], [0 1 0], [0 0 1]};
-% cm1 = colormap(jet(300)); cm1=cm1(1:256,:); %cm1(end,:) = 0.5;
-% cm2 = colormap(jet(10));
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%
-% Meta analysis results
-% data from RP_Meta_Analysis.m
+% Load meta analysis results
+% data from RP_Meta_Analysis.m 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% fixed effects meta analysis results [val,95% CIs]
 
-% two-sided variance
-fe_a = [0.8878,0.5052,1.27];
-fe_n = [0.7574,0.4394,1.075];
-fe_td50 = [21.89,15.96,27.81];
-fe_m = [0.2144,0.14,0.2888];
+lkb_meta_loc = 'Z:/elw/MATLAB/meta_analy/meta_data/lkb_meta_parameters.mat';
 
-fe_log10a = log10(fe_a);
-
-%% random effects meta analysis results [val,95% CIs]
-
-% two-sided variance
-re_a = [0.8169,0.2039,1.43];
-re_n = [1.237,0.04703,2.427];
-re_td50 = [21.89,15.96,27.81];
-re_m = [0.287,0.1311,0.4428];
-
-re_log10a = log10(re_a);
-
+cntr_colors = {[1 0 0], [0 1 0], [0 0 1]};
 
 screen_size=get(0,'ScreenSize');
 ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
@@ -49,26 +28,38 @@ fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta_com
 if isunix %on mac
     fig_loc = strrep(fig_loc,'Z:/elw/','/Users/elw/Documents/');
     fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
+    lkb_meta_loc = strrep(lkb_meta_loc,'Z:/elw/','/Users/elw/Documents/');
 end
 
+% fixed effects meta analysis results [val,95% CIs]
+load(lkb_meta_loc,'fe_vals','fe_lcl','fe_ucl',...
+                  're_vals','re_lcl','re_ucl');
+% Fixed-effects
+fe_a = [fe_vals(1) fe_lcl(1) fe_ucl(1)];
+fe_n = [fe_vals(2) fe_lcl(2) fe_ucl(2)];
+fe_td50 = [fe_vals(3) fe_lcl(3) fe_ucl(3)];
+fe_m = [fe_vals(4) fe_lcl(4) fe_ucl(4)];
+fe_log10a = log10(fe_a);
 
+
+% Random-effects
+re_a = [re_vals(1) re_lcl(1) re_ucl(1)];
+re_n = [re_vals(2) re_lcl(2) re_ucl(2)];
+re_td50 = [re_vals(3) re_lcl(3) re_ucl(3)];
+re_m = [re_vals(4) re_lcl(4) re_ucl(4)];
+re_log10a = log10(re_a);
+
+
+% Load data
 load(fn,'CGcomb');
-
-% LymanN = log10(CGcomb.mLymanN);
-% CGcomb.mLymanN = LymanN;
 
 
 % use mx_llhd_llhd to find contours when slicing at meta points
 [mx_llhd,mx_llhd_ind] = max(CGcomb.mLymanGrid.loglikelihood(:));
 [comb_td50_idx,comb_m_idx,comb_n_idx] =...
     ind2sub(size(CGcomb.mLymanGrid.loglikelihood),mx_llhd_ind);
-% compute the 68% and 95% CIs
-% uses chi2inv(0.65,1)...
-% low68 = mx_llhd-0.5* (1);
-% low95 = mx_llhd-0.5* (1.96^2);
-% low99 = mx_llhd-0.5* (3^2);
 
-%double check
+% compute the 68% and 95% CIs
 low68 = mx_llhd -0.5*(chi2inv(0.68,1));
 low95 = mx_llhd -0.5*(chi2inv(0.95,1));
 low99 = mx_llhd -0.5*(chi2inv(0.99,1));
@@ -106,7 +97,7 @@ lgnd = legend([h_comb h_fe_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([15 32]);
-ylim([0.04 0.65]);
+ylim([0.04 0.55]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -151,7 +142,7 @@ set(lgnd,'FontSize',18);
 
 
 xlim([0.26 3.2]);
-ylim([12 34.5]);
+ylim([12 31.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -196,8 +187,8 @@ lgnd = legend([h_comb h_fe_meta],...
     'Location','SouthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.26 4.4]);
-ylim([0.12 0.65]);
+xlim([0.26 3]);
+ylim([0.12 0.6]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -281,7 +272,7 @@ set(lgnd,'FontSize',18);
 
 
 xlim([0.1 1.5]);
-ylim([12 34.5]);
+ylim([12 31.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -327,7 +318,7 @@ lgnd = legend([h_comb h_fe_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([0.1 1.5]);
-ylim([0.12 0.65]);
+ylim([0.12 0.6]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -394,7 +385,7 @@ lgnd = legend([h_comb h_fe_meta h_re_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([15 32]);
-ylim([0.04 0.65]);
+ylim([0.04 0.55]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -440,7 +431,7 @@ lgnd = legend([h_comb h_fe_meta h_re_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([0.26 3.2]);
-ylim([12 34.5]);
+ylim([12 31.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -485,8 +476,8 @@ lgnd = legend([h_comb h_fe_meta h_re_meta],...
     'Location','SouthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.26 4.4]);
-ylim([0.12 0.65]);
+xlim([0.26 3]);
+ylim([0.12 0.6]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -576,7 +567,7 @@ lgnd = legend([h_comb h_fe_meta h_re_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([0.1 1.5]);
-ylim([12 34.5]);
+ylim([12 31.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -619,7 +610,7 @@ lgnd = legend([h_comb h_fe_meta h_re_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([0.1 1.5]);
-ylim([0.12 0.65]);
+ylim([0.12 0.6]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -662,7 +653,7 @@ lgnd = legend([h_comb h_re_meta],'Pooled best fit (projected)',['Random-effects'
 set(lgnd,'FontSize',18);
 
 xlim([15 32]);
-ylim([0.04 0.65]);
+ylim([0.04 0.55]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -707,7 +698,7 @@ lgnd = legend([h_comb h_re_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([0.26 3.2]);
-ylim([12 34.5]);
+ylim([12 31.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -751,8 +742,8 @@ lgnd = legend([h_comb h_re_meta],...
     'Location','SouthEast');
 set(lgnd,'FontSize',18);
 
-xlim([0.26 4.4]);
-ylim([0.12 0.65]);
+xlim([0.26 3]);
+ylim([0.12 0.6]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -827,7 +818,7 @@ lgnd = legend([h_comb h_re_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([0.1 1.5]);
-ylim([12 34.5]);
+ylim([12 31.5]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');
@@ -868,7 +859,7 @@ lgnd = legend([h_comb h_re_meta],...
 set(lgnd,'FontSize',18);
 
 xlim([0.1 1.5]);
-ylim([0.12 0.65]);
+ylim([0.12 0.6]);
  
 set(gca,'xminortick','on','yminortick','on');
 set(gca,'box','on');

@@ -1,5 +1,9 @@
 function RP_Meta_Analysis
 % do meta analysis (fixed/random effects) for rp study
+% does forest plots
+% saves meta analysis results to lkb_meta_parameters.mat
+
+
 screen_size=get(0,'ScreenSize');
 ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
 
@@ -15,10 +19,12 @@ disp('==========');
 
 fig_loc = 'Z:\elw\MATLAB\meta_analy\slides\figures\latest\';
 lkb_loc = 'Z:/elw/MATLAB/meta_analy/meta_data/lkb_parameters.mat';
+save_loc = 'Z:/elw/MATLAB/meta_analy/meta_data/lkb_meta_parameters.mat';
 
 if isunix %on mac
     fig_loc = strrep(fig_loc,'Z:/elw/','/Users/elw/Documents/');
     lkb_loc = strrep(lkb_loc,'Z:/elw/','/Users/elw/Documents/');
+    save_loc = strrep(save_loc,'Z:/elw/','/Users/elw/Documents/');
 end
 
 % lkb values from RP_Pooled_Results.m
@@ -32,45 +38,7 @@ pld_ucl = lkb_ucl(5,:);
 lkb_vals = lkb_vals(1:4,:);
 lkb_lcl = lkb_lcl(1:4,:);
 lkb_ucl = lkb_ucl(1:4,:);
-       
-%             msk,   nki,   rtog,  umich
-% lkb_log10a = [-0.34, -1,  0.33, 0.09];
-% lkb_log10a_lcl = [-Inf, -Inf, -0.126, -0.199];
-% lkb_log10a_ucl = [0.137, 0.48, 0.827, 0.252];
-% 
-% lkb_log10n = -lkb_log10a;
-% lkb_log10n_lcl = -lkb_log10a_lcl;
-% lkb_log10n_ucl = -lkb_log10a_ucl;
-% 
-% 
-% disp(['a: ',num2str(10.^(lkb_log10a))]);
-% disp(['a lcl: ',num2str(10.^(lkb_log10a_lcl))]);
-% disp(['a ucl: ',num2str(10.^(lkb_log10a_ucl))]);
-% disp(' ');
-% disp(['n: ',num2str(10.^(lkb_log10n))]);
-% disp(['n lcl: ',num2str(10.^(lkb_log10n_ucl))]);
-% disp(['n ucl: ',num2str(10.^(lkb_log10n_lcl))]);
-
-
-
-   
-       
-%        lkb_vals = [[0.46, 2.17, 14.9, 0.42];... %msk
-%             [0.1,  10,   17,   0.61];... % nki
-%             [2.14, 0.47, 45.9, 0.21];... % rtog
-%             [1.23, 0.81, 22.1, 0.16]]; % umich
-%         
-% %         % errors on n from invertign errors on a         
-%     lkb_ucl = [[1.37, 10,   42.0,  0.78];...
-%            [3.02, 10,   100.0, 1.09];...
-%            [6.72, 1.33, 87.2,  0.41];...
-%            [1.79, 1.32, 29.1,  0.29]];
-%        
-%     lkb_lcl = [[0.1,  0.73, 7.9,  0.24];...
-%            [0.1,  0.33, 11.5, 0.41];...
-%            [0.75, 0.15, 20.3, 0.12];...
-%            [0.76, 0.56, 16.1, 0.10]];
-    
+  
 
 if do_propigate_n_errors, % recalc errors on n from error propigation
     if ~do_one_sided_vars,
@@ -134,6 +102,7 @@ re_q = sum(lkb_weights.*(lkb_vals.^2)) - ...
 
 re_q_pval = 1-chi2cdf(re_q,re_df);
 re_i2 = (re_q - re_df)./re_q;
+re_i2(re_i2 < 0) = 0;
 
 re_c = sum(lkb_weights) - (sum(lkb_weights.^2)./sum(lkb_weights));
     
@@ -205,7 +174,9 @@ end
 
 
 
- 
+ disp(['Saving meta-analysis lkb parameters to: ',save_loc,'...']);
+ save(save_loc,'fe_vals','fe_lcl','fe_ucl',...
+               're_vals','re_lcl','re_ucl');
 
 
 

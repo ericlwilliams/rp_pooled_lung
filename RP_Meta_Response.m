@@ -2,7 +2,7 @@ function RP_Meta_Response
 
 screen_size=get(0,'ScreenSize');
 ss_four2three = [0 0 screen_size(3)/2 (screen_size(4)/2)*(4/3)];
-fig_loc = 'Z:\elw\MATLAB\meta_analy\slides\figures\meta_response\latest\';
+fig_loc = 'Z:\elw\MATLAB\meta_analy\slides\figures\heterogeneity\latest\';
 
 do_print = true;
 cur_fig_ctr = 1;

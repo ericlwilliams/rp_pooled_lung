@@ -10,11 +10,6 @@ lkb_save_loc='Z:/elw/MATLAB/meta_analy/meta_data/lkb_parameters.mat';
 pld_data = {'CGmsk','CGnki','CGrtog','CGum','CGcomb'};
 protocols = {'MSK','NKI','RTOG','UMich','Comb'};
 
-% TMP
-fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta_comb.mat';
-pld_data = {'CGcomb'};
-protocols = {'Comb'};
-
 if isunix %on mac
     fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
     lkb_save_loc = strrep(lkb_save_loc,'Z:/elw/','/Users/elw/Documents/');
