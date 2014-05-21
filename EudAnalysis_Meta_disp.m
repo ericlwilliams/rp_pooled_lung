@@ -2,6 +2,8 @@ function EudAnalysis_Meta_disp
 tic; %close all;
 
 %% random effects meta analysis results [val,95% lo, hi]
+% meta-analysis results from rpMetaAnalysis.m
+
 re_td50 = [21.88,15.9,27.8];
 re_log10a = [-0.0862,-0.69897,0.15533];
 re_m = [0.29,0.13,0.44];
@@ -122,68 +124,9 @@ if 0
     
 end
 
-% plot DVHs -> EudAnalysis_DVHs.m
-if 0
-    CGnki.fDVHCurvesSummary_DVH();
-    %
-    %     disp('RTOG DVH curves:');
-    %
-    %     figure(1); clf reset; hold on; % grid on;
-    %     f = [CGnki.mGrp.mFlgCensor];
-    %     % DVHs of censored patients
-    %     g = find(f);
-    %     for k = 1:length(g)
-    %         %plot(CGnki.mGrp(g(k)).mDoseBins_org, CGnki.mGrp(g(k)).mVolCum);
-    %         plot(CGnki.mGrp(g(k)).mDoseBins_org, CGnki.mGrp(g(k)).mVolDiff);
-    %     end
-    %     % DVHs of complicated patients
-    %     g = find(~f);
-    %     for k = 1:length(g)
-    %         %plot(CGnki.mGrp(g(k)).mDoseBins_org, CGnki.mGrp(g(k)).mVolCum,'r');
-    %         plot(CGnki.mGrp(g(k)).mDoseBins_org, CGnki.mGrp(g(k)).mVolDiff,'r');
-    %     end
-    %     ylim([0,0.5]);
-    %     set(gca,'xminortick','on','yminortick','on');
-    % %
-    %     figure(1); clf reset; hold on; % grid on;
-    %     f = [CGrtog.mGrp.mFlgCensor];
-    %     % DVHs of censored patients
-    %     for k=1:length(f),
-    %         if f(k), %# cens
-    %             dvh_color = 'b';
-    %         else
-    %             dvh_color = 'r';
-    %         end
-    %         dosebins = CGrtog.mGrp(k).mDoseBins_org;
-    %         volcum = CGrtog.mGrp(k).mVolCum;
-    %         plot(dosebins(1:end-1), volcum(1:end-1),dvh_color);
-    %     end
-    %     set(gca,'xminortick','on','yminortick','on');
-    %     xlabel('Dose [Gy]','FontSize',15);
-    %     ylabel('Volume Fraction','FontSize',15);
-    %
-    %     figure(2); clf reset; hold on; % grid on;
-    %     f = [CGrtog.mGrp.mFlgCensor];
-    %     % DVHs of censored patients
-    %     for k=1:length(f),
-    %         if f(k), %# cens
-    %             dvh_color = 'b';
-    %         else
-    %             dvh_color = 'r';
-    %         end
-    %         dosebins = CGrtog.mGrp(k).mDoseBins_org;
-    %         voldiff = CGrtog.mGrp(k).mVolDiff;
-    %         plot(dosebins(1:end-1), voldiff(1:end-1),dvh_color);
-    %     end
-    %     set(gca,'xminortick','on','yminortick','on');
-    %     xlabel('Dose [Gy]','FontSize',15);
-    %     ylabel('Volume Fraction','FontSize',15);
-    %
-end
 
 % atlases
 if 0
-    
     if ~is_comb_only,
         %disp(' '); disp(Regions{k});
         figure(1); clf reset;
