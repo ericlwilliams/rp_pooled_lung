@@ -40,6 +40,10 @@ if is_comb_only,
 else
     fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta.mat';
 end
+if isunix %on mac
+    fig_loc = strrep(fig_loc,'Z:/elw/','/Users/elw/Documents/');
+    fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
+end
 
 %fn = 'Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_EUD_crs_meta.mat';
 

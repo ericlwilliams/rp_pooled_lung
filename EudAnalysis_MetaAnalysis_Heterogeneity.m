@@ -23,6 +23,11 @@ fig_loc = 'Z:/elw/MATLAB/meta_analy/slides/figures/latest/';
 % fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_med_EUD_fine_meta.mat';
 %fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_crs_EUD_fine_meta.mat';
 
+if isunix %on mac
+    fig_loc = strrep(fig_loc,'Z:/elw/','/Users/elw/Documents/');
+    fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
+end
+
 load(fn,'CGnki','CGmsk','CGrtog','CGum','CGcomb');
 protocols = {'NKI','MSK','RTOG','UM','Comb'};
 % change to log10(n)  (add - for log10(a)
