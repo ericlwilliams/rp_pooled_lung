@@ -63,6 +63,13 @@ fig_loc = 'Z:/elw/MATLAB/meta_analy/slides/figures/latest/';
 % Only loading combined dataset 
 fn='Z:/elw/MATLAB/meta_analy/meta_data/MSK_NKI_UMich_RTOG_fine_EUD_fine_meta_comb.mat';
 %fn='C:\Documents and Settings\williae1\meta_data\meta_lung\MSK_NKI_UMich_RTOG_med_EUD_fine_meta_comb.mat';
+
+if isunix %on mac
+    fig_loc = strrep(fig_loc,'Z:/elw/','/Users/elw/Documents/');
+    fn = strrep(fn,'Z:/elw/','/Users/elw/Documents/');
+end
+
+
 load(fn,'CGcomb');
 
 % LymanN = log10(CGcomb.mLymanN);
