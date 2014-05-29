@@ -90,17 +90,17 @@ doses = [0:0.1:25]';
 %% pooled
 % lyman probability
 lkb_re_prob = normcdf((doses-pld_re_vals(3))./(pld_re_vals(3)*pld_re_vals(4)),0,1);
-% low68 = mx - 0.5*(1*2);
-lkb_re_llhd_low68 = re_mx - 0.5*(chi2inv(0.68,1));
-lkb_re_low68_td50_m_ctr = contourc(lkb_td50,lkb_m,ll',[lkb_re_llhd_low68 lkb_re_llhd_low68]);
-lkb_re_low68_td50 = lkb_re_low68_td50_m_ctr(1,2:end);
-lkb_re_low68_m = lkb_re_low68_td50_m_ctr(2,2:end);
+% low95 = mx - 0.5*(1*2);
+lkb_re_llhd_low95 = re_mx - 0.5*(chi2inv(0.95,1));
+lkb_re_low95_td50_m_ctr = contourc(lkb_td50,lkb_m,re_ll',[lkb_re_llhd_low95 lkb_re_llhd_low95]);
+lkb_re_low95_td50 = lkb_re_low95_td50_m_ctr(1,2:end);
+lkb_re_low95_m = lkb_re_low95_td50_m_ctr(2,2:end);
 
-lkb_re_td50_68_ll = min(lkb_re_low68_td50); 
-lkb_re_td50_68_ul = max(lkb_re_low68_td50); 
+lkb_re_td50_95_ll = min(lkb_re_low95_td50); 
+lkb_re_td50_95_ul = max(lkb_re_low95_td50); 
 
-lkb_re_m_68_ll = min(lkb_re_low68_m); 
-lkb_re_m_68_ul = max(lkb_re_low68_m); 
+lkb_re_m_95_ll = min(lkb_re_low95_m); 
+lkb_re_m_95_ul = max(lkb_re_low95_m); 
 
 % Random-Effects
 re_prob = normcdf((doses-re_td50(1))./(re_m(1).*re_td50(1)),0,1);
@@ -109,16 +109,16 @@ re_td50_lsd = (re_td50(1)-re_td50(2))./1.96;
 re_td50_usd = (re_td50(3)-re_td50(1))./1.96;
 re_td50_dist_ll = normrnd(re_td50(1),re_td50_lsd,1e5,1);
 re_td50_dist_ul = normrnd(re_td50(1),re_td50_usd,1e5,1);
-re_td50_dist_68_ll = re_td50(1)-re_td50_lsd;
-re_td50_dist_68_ul = re_td50(1)+re_td50_usd;
+re_td50_dist_95_ll = re_td50(1)-re_td50_lsd;
+re_td50_dist_95_ul = re_td50(1)+re_td50_usd;
 
 
 re_m_lsd = (re_m(1)-re_m(2))./1.96;
 re_m_usd = (re_m(3)-re_m(1))./1.96;
 re_m_dist_ll = normrnd(re_m(1),re_m_lsd,1e5,1);
 re_m_dist_ul = normrnd(re_m(1),re_m_usd,1e5,1);
-re_m_dist_68_ll = re_m(1)-re_m_lsd;
-re_m_dist_68_ul = re_m(1)+re_m_usd;
+re_m_dist_95_ll = re_m(1)-re_m_lsd;
+re_m_dist_95_ul = re_m(1)+re_m_usd;
 
 % Fixed-Effects
 fe_prob = normcdf((doses-fe_td50(1))./(fe_m(1).*fe_td50(1)),0,1);
@@ -127,50 +127,50 @@ fe_td50_lsd = (fe_td50(1)-fe_td50(2))./1.96;
 fe_td50_usd = (fe_td50(3)-fe_td50(1))./1.96;
 fe_td50_dist_ll = normrnd(fe_td50(1),fe_td50_lsd,1e5,1);
 fe_td50_dist_ul = normrnd(fe_td50(1),fe_td50_usd,1e5,1);
-fe_td50_dist_68_ll = fe_td50(1)-fe_td50_lsd;
-fe_td50_dist_68_ul = fe_td50(1)+fe_td50_usd;
+fe_td50_dist_95_ll = fe_td50(1)-fe_td50_lsd;
+fe_td50_dist_95_ul = fe_td50(1)+fe_td50_usd;
 
 fe_m_lsd = (fe_m(1)-fe_m(2))./1.96;
 fe_m_usd = (fe_m(3)-fe_m(1))./1.96;
 fe_m_dist_ll = normrnd(fe_m(1),fe_m_lsd,1e5,1);
 fe_m_dist_ul = normrnd(fe_m(1),fe_m_usd,1e5,1);
-fe_m_dist_68_ll = fe_m(1)-fe_m_lsd;
-fe_m_dist_68_ul = fe_m(1)+fe_m_usd;
+fe_m_dist_95_ll = fe_m(1)-fe_m_lsd;
+fe_m_dist_95_ul = fe_m(1)+fe_m_usd;
 
 % FE lyman probability
 lkb_fe_prob = normcdf((doses-pld_fe_vals(3))./(pld_fe_vals(3)*pld_fe_vals(4)),0,1);
-% low68 = mx - 0.5*(1*2);
-lkb_fe_llhd_low68 = fe_mx - 0.5*(chi2inv(0.68,1));
-lkb_fe_low68_td50_m_ctr = contourc(lkb_td50,lkb_m,ll',[lkb_fe_llhd_low68 lkb_fe_llhd_low68]);
+% low95 = mx - 0.5*(1*2);
+lkb_fe_llhd_low95 = fe_mx - 0.5*(chi2inv(0.95,1));
+lkb_fe_low95_td50_m_ctr = contourc(lkb_td50,lkb_m,fe_ll',[lkb_fe_llhd_low95 lkb_fe_llhd_low95]);
 
-lkb_fe_low68_td50 = lkb_fe_low68_td50_m_ctr(1,2:end);
-lkb_fe_low68_m = lkb_fe_low68_td50_m_ctr(2,2:end);
+lkb_fe_low95_td50 = lkb_fe_low95_td50_m_ctr(1,2:end);
+lkb_fe_low95_m = lkb_fe_low95_td50_m_ctr(2,2:end);
 
-lkb_fe_td50_68_ll = min(lkb_fe_low68_td50); 
-lkb_fe_td50_68_ul = max(lkb_fe_low68_td50); 
+lkb_fe_td50_95_ll = min(lkb_fe_low95_td50); 
+lkb_fe_td50_95_ul = max(lkb_fe_low95_td50); 
 
-lkb_fe_m_68_ll = min(lkb_fe_low68_m); 
-lkb_fe_m_68_ul = max(lkb_fe_low68_m); 
+lkb_fe_m_95_ll = min(lkb_fe_low95_m); 
+lkb_fe_m_95_ul = max(lkb_fe_low95_m); 
 
 
 % at each does point, sample parameter CIs, pick largest fluctuation
-re_prob_68_lcl = inf(length(doses),1);
-re_prob_68_ucl = inf(length(doses),1);
+re_prob_95_lcl = inf(length(doses),1);
+re_prob_95_ucl = inf(length(doses),1);
 
-fe_prob_68_lcl = inf(length(doses),1);
-fe_prob_68_ucl = inf(length(doses),1);
+fe_prob_95_lcl = inf(length(doses),1);
+fe_prob_95_ucl = inf(length(doses),1);
 
-lkb_re_prob_68_lcl = zeros(length(doses),1);
-lkb_re_prob_68_ucl = zeros(length(doses),1);
+lkb_re_prob_95_lcl = zeros(length(doses),1);
+lkb_re_prob_95_ucl = zeros(length(doses),1);
 
-lkb_fe_prob_68_lcl = zeros(length(doses),1);
-lkb_fe_prob_68_ucl = zeros(length(doses),1);
+lkb_fe_prob_95_lcl = zeros(length(doses),1);
+lkb_fe_prob_95_ucl = zeros(length(doses),1);
 
 for d=1:length(doses)
     % RE pooled
-    lkb_re_prob_68 = normcdf((doses(d)-lkb_re_low68_td50)./(lkb_re_low68_m.*lkb_re_low68_td50),0,1); % probability at each iso point
-    lkb_re_prob_68_lcl(d) = min(lkb_re_prob_68);
-    lkb_re_prob_68_ucl(d) = max(lkb_re_prob_68);
+    lkb_re_prob_95 = normcdf((doses(d)-lkb_re_low95_td50)./(lkb_re_low95_m.*lkb_re_low95_td50),0,1); % probability at each iso point
+    lkb_re_prob_95_lcl(d) = min(lkb_re_prob_95);
+    lkb_re_prob_95_ucl(d) = max(lkb_re_prob_95);
     
     
     % Random-effects
@@ -179,8 +179,8 @@ for d=1:length(doses)
     re_prob_ll = normcdf((doses(d)-re_td50_dist_ll)./(re_m_dist_ll.*re_td50_dist_ll),0,1);
     re_std_ll = std(re_prob_ll);
   
-    re_prob_68_lcl(d) = max((re_prob(d)-(re_std_ll)),0);
-    re_prob_68_ucl(d) = min((re_prob(d)+(re_std_ul)),1);
+    re_prob_95_lcl(d) = max((re_prob(d)-(re_std_ll)),0);
+    re_prob_95_ucl(d) = min((re_prob(d)+(re_std_ul)),1);
     
     % Fixed-effects
     fe_prob_ul = normcdf((doses(d)-fe_td50_dist_ul)./(fe_m_dist_ul.*fe_td50_dist_ul),0,1);
@@ -188,13 +188,13 @@ for d=1:length(doses)
     fe_prob_ll = normcdf((doses(d)-fe_td50_dist_ll)./(fe_m_dist_ll.*fe_td50_dist_ll),0,1);
     fe_std_ll = std(fe_prob_ll);
   
-    fe_prob_68_lcl(d) = max((fe_prob(d)-(fe_std_ll)),0);
-    fe_prob_68_ucl(d) = min((fe_prob(d)+(fe_std_ul)),1);
+    fe_prob_95_lcl(d) = max((fe_prob(d)-(fe_std_ll)),0);
+    fe_prob_95_ucl(d) = min((fe_prob(d)+(fe_std_ul)),1);
     
     % FE pooled
-    lkb_fe_prob_68 = normcdf((doses(d)-lkb_fe_low68_td50)./(lkb_fe_low68_m.*lkb_fe_low68_td50),0,1); % probability at each iso point
-    lkb_fe_prob_68_lcl(d) = min(lkb_fe_prob_68);
-    lkb_fe_prob_68_ucl(d) = max(lkb_fe_prob_68);
+    lkb_fe_prob_95 = normcdf((doses(d)-lkb_fe_low95_td50)./(lkb_fe_low95_m.*lkb_fe_low95_td50),0,1); % probability at each iso point
+    lkb_fe_prob_95_lcl(d) = min(lkb_fe_prob_95);
+    lkb_fe_prob_95_ucl(d) = max(lkb_fe_prob_95);
         
     
 end
@@ -206,23 +206,23 @@ set(cur_fig,'Position',ss_four2three);
 cur_fig_ctr = cur_fig_ctr+1;
 
 h_lkb_re_prob=plot(doses,lkb_re_prob,'r-','LineWidth',2);hold on;
-plot(doses,lkb_re_prob_68_ucl,'r-.','LineWidth',1);
-plot(doses,lkb_re_prob_68_lcl,'r-.','LineWidth',1);
+plot(doses,lkb_re_prob_95_ucl,'r-.','LineWidth',1);
+plot(doses,lkb_re_prob_95_lcl,'r-.','LineWidth',1);
 h_re_prob=plot(doses,re_prob,'k-','LineWidth',2);
-plot(doses,re_prob_68_ucl,'k-.','LineWidth',1);
-plot(doses,re_prob_68_lcl,'k-.','LineWidth',1);
+plot(doses,re_prob_95_ucl,'k-.','LineWidth',1);
+plot(doses,re_prob_95_lcl,'k-.','LineWidth',1);
 
 lgnd = legend([h_re_prob h_lkb_re_prob],...
-    ['\underline{Random-Effect} [68\% CIs]',10,...
+    ['\underline{Random-Effect} [95\% CIs]',10,...
     '~~TD$_{50} = ',num2str(re_td50(1),3),...
-    '~[',num2str(re_td50_dist_68_ll,3),'-',num2str(re_td50_dist_68_ul,3),']$',10,...
+    '~[',num2str(re_td50_dist_95_ll,3),'-',num2str(re_td50_dist_95_ul,3),']$',10,...
     '~~$m = ',num2str(re_m(1),3),...
-    '~[',num2str(re_m_dist_68_ll,3),'-',num2str(re_m_dist_68_ul,3),']$'],...
-    ['\underline{Pooled} [68\% CIs]',10,...
+    '~[',num2str(re_m_dist_95_ll,3),'-',num2str(re_m_dist_95_ul,3),']$'],...
+    ['\underline{Pooled} [95\% CIs]',10,...
     '~~TD$_{50} = ',num2str(pld_re_vals(3),3),...
-                  '~[',num2str(lkb_re_td50_68_ll,3),'-',num2str(lkb_re_td50_68_ul,3),']$',10,...
+                  '~[',num2str(lkb_re_td50_95_ll,3),'-',num2str(lkb_re_td50_95_ul,3),']$',10,...
                   '~~$m = ',num2str(pld_re_vals(4),3),...
-                  '~[',num2str(lkb_re_m_68_ll,3),'-',num2str(lkb_re_m_68_ul,3),']$'],...
+                  '~[',num2str(lkb_re_m_95_ll,3),'-',num2str(lkb_re_m_95_ul,3),']$'],...
     'location','NorthWest');
 
 set(lgnd,'interpreter','latex');            
@@ -230,14 +230,14 @@ set(lgnd,'FontSize',22);
 
 % text(0.05,0.7,['\underline{Random-Effect}:',10,...
 %                   '~~TD$_{50} = ',num2str(re_td50(1),3),...
-%                   '~[',num2str(re_td50_dist_68_ll,3),'-',num2str(re_td50_dist_68_ul,3),']$',10,...
+%                   '~[',num2str(re_td50_dist_95_ll,3),'-',num2str(re_td50_dist_95_ul,3),']$',10,...
 %                   '~~$m = ',num2str(re_m(1),3),...
-%                   '~[',num2str(re_m_dist_68_ll,3),'-',num2str(re_m_dist_68_ul,3),']$',10,...
+%                   '~[',num2str(re_m_dist_95_ll,3),'-',num2str(re_m_dist_95_ul,3),']$',10,...
 %                    '\underline{Pooled}:',10,...
 %                   '~~TD$_{50} = ',num2str(pld_re_vals(3),3),...
-%                   '~[',num2str(lkb_re_td50_68_ll,3),'-',num2str(lkb_re_td50_68_ul,3),']$',10,...
+%                   '~[',num2str(lkb_re_td50_95_ll,3),'-',num2str(lkb_re_td50_95_ul,3),']$',10,...
 %                   '~~$m = ',num2str(pld_re_vals(4),3),...
-%                   '~[',num2str(lkb_re_m_68_ll,3),'-',num2str(lkb_re_m_68_ul,3),']$'],...
+%                   '~[',num2str(lkb_re_m_95_ll,3),'-',num2str(lkb_re_m_95_ul,3),']$'],...
 %                   'unit','normalize',...
 %               'interpreter','latex',...
 %                 'fontsize',18);
@@ -247,7 +247,7 @@ set(lgnd,'FontSize',22);
 set(gca,'xminortick','on','yminortick','on');
 
 set(gca,'FontSize',18);
-xlabel(['gEUD (a=',num2str(pld_re_vals(1),3),') [Gy]'],'FontSize',20);
+xlabel(['gEUD (n=',num2str(round(100*pld_re_vals(2))/100,3),') [Gy]'],'FontSize',20);
 ylabel('RP probability','FontSize',20);
 ylim([0 0.8]);
 
@@ -262,23 +262,23 @@ set(cur_fig,'Position',ss_four2three);
 cur_fig_ctr = cur_fig_ctr+1;
 
 h_lkb_fe_prob=plot(doses,lkb_fe_prob,'r-','LineWidth',2);hold on;
-plot(doses,lkb_fe_prob_68_ucl,'r-.','LineWidth',1);
-plot(doses,lkb_fe_prob_68_lcl,'r-.','LineWidth',1);
+plot(doses,lkb_fe_prob_95_ucl,'r-.','LineWidth',1);
+plot(doses,lkb_fe_prob_95_lcl,'r-.','LineWidth',1);
 h_fe_prob=plot(doses,fe_prob,'k-','LineWidth',2);
-plot(doses,fe_prob_68_ucl,'k-.','LineWidth',1);
-plot(doses,fe_prob_68_lcl,'k-.','LineWidth',1);
+plot(doses,fe_prob_95_ucl,'k-.','LineWidth',1);
+plot(doses,fe_prob_95_lcl,'k-.','LineWidth',1);
 
 lgnd = legend([h_fe_prob h_lkb_fe_prob],...
-    ['\underline{Fixed-Effect} [68\% CIs]',10,...
+    ['\underline{Fixed-Effect} [95\% CIs]',10,...
     '~~TD$_{50} = ',num2str(fe_td50(1),3),...
-    '~[',num2str(fe_td50_dist_68_ll,3),'-',num2str(fe_td50_dist_68_ul,3),']$',10,...
+    '~[',num2str(fe_td50_dist_95_ll,3),'-',num2str(fe_td50_dist_95_ul,3),']$',10,...
     '~~$m = ',num2str(fe_m(1),3),...
-    '~[',num2str(fe_m_dist_68_ll,3),'-',num2str(fe_m_dist_68_ul,3),']$'],...
-    ['\underline{Pooled} [68\% CIs]',10,...
+    '~[',num2str(fe_m_dist_95_ll,3),'-',num2str(fe_m_dist_95_ul,3),']$'],...
+    ['\underline{Pooled} [95\% CIs]',10,...
     '~~TD$_{50} = ',num2str(pld_fe_vals(3),3),...
-                  '~[',num2str(lkb_fe_td50_68_ll,3),'-',num2str(lkb_fe_td50_68_ul,3),']$',10,...
+                  '~[',num2str(lkb_fe_td50_95_ll,3),'-',num2str(lkb_fe_td50_95_ul,3),']$',10,...
                   '~~$m = ',num2str(pld_fe_vals(4),3),...
-                  '~[',num2str(lkb_fe_m_68_ll,3),'-',num2str(lkb_fe_m_68_ul,3),']$'],...
+                  '~[',num2str(lkb_fe_m_95_ll,3),'-',num2str(lkb_fe_m_95_ul,3),']$'],...
     'location','NorthWest');
 
 set(lgnd,'interpreter','latex');            
@@ -286,14 +286,14 @@ set(lgnd,'FontSize',22);
 % 
 % text(0.05,0.7,['\underline{Fixed-Effect}:',10,...
 %                   '~~TD$_{50} = ',num2str(fe_td50(1),3),...
-%                   '~[',num2str(fe_td50_dist_68_ll,3),'-',num2str(fe_td50_dist_68_ul,3),']$',10,...
+%                   '~[',num2str(fe_td50_dist_95_ll,3),'-',num2str(fe_td50_dist_95_ul,3),']$',10,...
 %                   '~~$m = ',num2str(fe_m(1),3),...
-%                   '~[',num2str(fe_m_dist_68_ll,3),'-',num2str(fe_m_dist_68_ul,3),']$',10,...
+%                   '~[',num2str(fe_m_dist_95_ll,3),'-',num2str(fe_m_dist_95_ul,3),']$',10,...
 %                    '\underline{Pooled}:',10,...
 %                   '~~TD$_{50} = ',num2str(pld_fe_vals(3),3),...
-%                   '~[',num2str(lkb_fe_td50_68_ll,3),'-',num2str(lkb_fe_td50_68_ul,3),']$',10,...
+%                   '~[',num2str(lkb_fe_td50_95_ll,3),'-',num2str(lkb_fe_td50_95_ul,3),']$',10,...
 %                   '~~$m = ',num2str(pld_fe_vals(4),3),...
-%                   '~[',num2str(lkb_fe_m_68_ll,3),'-',num2str(lkb_fe_m_68_ul,3),']$'],...
+%                   '~[',num2str(lkb_fe_m_95_ll,3),'-',num2str(lkb_fe_m_95_ul,3),']$'],...
 %                   'unit','normalize',...
 %               'interpreter','latex',...
 %                 'fontsize',18);
@@ -301,7 +301,7 @@ set(lgnd,'FontSize',22);
 set(gca,'xminortick','on','yminortick','on');
 
 set(gca,'FontSize',18);
-xlabel(['gEUD (a=',num2str(pld_fe_vals(1),5),') [Gy]'],'FontSize',20);
+xlabel(['gEUD (n=',num2str(round(100*pld_fe_vals(2))/100,5),') [Gy]'],'FontSize',20);
 ylabel('RP probability','FontSize',20);
 ylim([0 0.8]);
 
